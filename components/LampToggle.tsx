@@ -24,7 +24,7 @@ export default function LampToggle() {
   return (
     <button
       onClick={() => setIsOn(!isOn)}
-      className="focus:outline-none flex items-center justify-center cursor-pointer relative w-[286px] h-[383px]"
+      className="lamp-container focus:outline-none flex items-center justify-center cursor-pointer relative w-[160px] h-[214px] md:w-[286px] md:h-[383px] transition-all"
       aria-label="Toggle Lamp"
     >
       {currentFrames.map((src, i) => (
@@ -34,7 +34,9 @@ export default function LampToggle() {
           alt="Lamp Toggle"
           width={286}
           height={383}
-          className={`absolute inset-0 w-[286px] h-[383px] object-contain lamp-crossfade lamp-crossfade--${i + 1}`}
+          className={`absolute inset-0 w-full h-full object-contain lamp-crossfade lamp-crossfade--${i + 1} ${
+            isOn && i > 0 ? "translate-x-[15px]" : ""
+          }`}
           suppressHydrationWarning
         />
       ))}
