@@ -9,6 +9,11 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --ink: #1d1512;
+  /* frame height, and where a selected card lands (center x, center y, scale) */
+  --fh: 1117;
+  --tcx: 864;
+  --tcy: 563.5;
+  --ts: 1.3406;
 
   position: relative;
   min-height: 100dvh;
@@ -18,8 +23,13 @@
 }
 
 .bg {
-  object-fit: cover;
+  position: fixed;
+  inset: 0;
   z-index: -1;
+}
+
+.bg img {
+  object-fit: cover;
 }
 
 .frame {
@@ -43,9 +53,11 @@
 /* ---------- event cards ---------- */
 
 .card {
+  --cx: var(--x);
+  --cy: var(--y);
   position: absolute;
-  left: calc(var(--x) * var(--u));
-  top: calc(var(--y) * var(--u));
+  left: calc(var(--cx) * var(--u));
+  top: calc(var(--cy) * var(--u));
   width: calc(276 * var(--u));
   height: calc(443 * var(--u));
   z-index: 2;
@@ -76,7 +88,7 @@
 /* cards travel up from below the frame, one after another (Figma Events frames 1 to 5) */
 @keyframes rise {
   from {
-    transform: translateY(calc((1150 - var(--y)) * var(--u)));
+    transform: translateY(calc((var(--fh) + 33 - var(--cy)) * var(--u)));
     opacity: 0;
   }
   35% {
@@ -139,14 +151,14 @@
 
 /* ---------- selected event (Figma OneEvent frames) ---------- */
 
-/* the chosen card moves to the frame center (864, 563.5) and grows to 370 x 595 */
+/* the chosen card moves to (--tcx, --tcy) and grows to 370 x 595 */
 .stage[data-open] .card[data-selected] {
   z-index: 3;
   transform: translate(
-      calc((864 - 138 - var(--x)) * var(--u)),
-      calc((563.5 - 221.5 - var(--y)) * var(--u))
+      calc((var(--tcx) - 138 - var(--cx)) * var(--u)),
+      calc((var(--tcy) - 221.5 - var(--cy)) * var(--u))
     )
-    scale(1.3406);
+    scale(var(--ts));
   transition-delay: 90ms;
 }
 
@@ -161,14 +173,18 @@
 /* ---------- details and description cards ---------- */
 
 .detail {
+  --dy: 281;
+  --fy: 0;
+  --ds: 1;
   position: absolute;
-  top: calc(281 * var(--u));
+  top: calc(var(--dy) * var(--u));
   left: calc(var(--dx) * var(--u));
   width: calc(346 * var(--u));
   height: calc(561 * var(--u));
   z-index: 1;
   opacity: 0;
-  transform: translateX(calc(var(--from) * var(--u))) scale(0.8);
+  transform: translate(calc(var(--fx) * var(--u)), calc(var(--fy) * var(--u)))
+    scale(calc(var(--ds) * 0.8));
   pointer-events: none;
   transition:
     transform 380ms var(--ease-in-out),
@@ -177,7 +193,7 @@
 
 .stage[data-open] .detail {
   opacity: 1;
-  transform: none;
+  transform: scale(var(--ds));
   pointer-events: auto;
   transition:
     transform 850ms var(--ease-out),
@@ -187,12 +203,12 @@
 
 .detailLeft {
   --dx: 229;
-  --from: 462;
+  --fx: 462;
 }
 
 .detailRight {
   --dx: 1147;
-  --from: -456;
+  --fx: -456;
 }
 
 .detailArt {
@@ -316,6 +332,62 @@
   }
 
   .detail {
-    transform: none;
+    transform: scale(var(--ds));
+  }
+}
+
+/* ---------- phones and portrait tablets ----------
+ * A 660-wide frame: cards in a staggered 2x2 grid that fills the screen.
+ * An opened event stacks vertically (card, then details, then description) and the page scrolls.
+ * svh keeps --u stable while the mobile address bar shows and hides.
+ */
+
+@media (max-width: 767px), (orientation: portrait) and (max-width: 1100px) {
+  .page {
+    --u: min(calc(100vw / 660), calc(100svh / 1250));
+    --fh: 1250;
+    --tcx: 330;
+    --tcy: 447.5;
+  }
+
+  .frame {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    width: calc(660 * var(--u));
+    height: calc(var(--fh) * var(--u));
+    margin: max(0px, calc((100svh - 1250 * var(--u)) / 2)) auto 0;
+  }
+
+  .stage[data-open] {
+    --fh: 2574;
+  }
+
+  .card {
+    --cx: var(--mx);
+    --cy: var(--my);
+  }
+
+  .detail {
+    --dx: 157;
+    --ds: 1.5;
+    transform-origin: 50% 0;
+  }
+
+  .detailLeft {
+    --dy: 790;
+    --fx: 0;
+    --fy: -420;
+  }
+
+  .detailRight {
+    --dy: 1672;
+    --fx: 0;
+    --fy: -1250;
+  }
+
+  .close {
+    top: calc(2480 * var(--u));
   }
 }

@@ -18,14 +18,9 @@ export const metadata: Metadata = {
 export default function EventsPage() {
   return (
     <main className={styles.page}>
-      <Image
-        src="/events/bg-marble.webp"
-        alt=""
-        fill
-        preload
-        sizes="100vw"
-        className={styles.bg}
-      />
+      <div className={styles.bg}>
+        <Image src="/events/bg-marble.webp" alt="" fill preload sizes="100vw" />
+      </div>
       <Navbar/>
       <h1 className={styles.title}>Events</h1>
       <EventsStage fontClass={yasharth.className} />
