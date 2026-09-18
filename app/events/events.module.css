@@ -1,0 +1,321 @@
+/*
+ * The Events page is laid out on the Figma frame (1728 x 1117).
+ * --u is one Figma pixel on screen: the frame is scaled to fit the viewport and centered,
+ * so every position below is written as (figma px) * var(--u).
+ */
+
+.page {
+  --u: min(calc(100vw / 1728), calc(100dvh / 1117));
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ink: #1d1512;
+
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #141013;
+  isolation: isolate;
+}
+
+.bg {
+  object-fit: cover;
+  z-index: -1;
+}
+
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(1728 * var(--u));
+  height: calc(1117 * var(--u));
+  translate: -50% -50%;
+}
+
+.title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- event cards ---------- */
+
+.card {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(276 * var(--u));
+  height: calc(443 * var(--u));
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: 50% 50%;
+  transition:
+    transform 800ms var(--ease-out),
+    opacity 500ms ease;
+  /* closing: wait for the details to fold away, then return in order */
+  transition-delay: calc(180ms + var(--i) * 70ms);
+}
+
+.card:focus-visible {
+  outline: none;
+}
+
+.rise {
+  position: absolute;
+  inset: 0;
+  animation: rise 1200ms var(--ease-out) both;
+  animation-delay: calc(250ms + var(--i) * 170ms);
+}
+
+/* cards travel up from below the frame, one after another (Figma Events frames 1 to 5) */
+@keyframes rise {
+  from {
+    transform: translateY(calc((1150 - var(--y)) * var(--u)));
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.lift {
+  position: absolute;
+  inset: 0;
+  transition: transform 450ms var(--ease-out);
+}
+
+.art {
+  position: absolute;
+  inset: calc(var(--pad) * var(--u) * -1);
+}
+
+.art img {
+  object-fit: fill;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* hover variant from the Figma component: a soft white halo around the card */
+.glow {
+  position: absolute;
+  inset: calc(var(--pad) * var(--u) * -1);
+  opacity: 0;
+  filter: brightness(0) invert(1) blur(calc(22 * var(--u)));
+  transition: opacity 450ms var(--ease-out);
+  pointer-events: none;
+}
+
+.glow img {
+  object-fit: fill;
+}
+
+@media (hover: hover) {
+  .stage:not([data-open]) .card:hover .lift {
+    transform: translateY(calc(-10 * var(--u)));
+  }
+
+  .stage:not([data-open]) .card:hover .glow {
+    opacity: 0.7;
+  }
+}
+
+.card:focus-visible .lift {
+  transform: translateY(calc(-10 * var(--u)));
+}
+
+.card:focus-visible .glow {
+  opacity: 0.8;
+}
+
+/* ---------- selected event (Figma OneEvent frames) ---------- */
+
+/* the chosen card moves to the frame center (864, 563.5) and grows to 370 x 595 */
+.stage[data-open] .card[data-selected] {
+  z-index: 3;
+  transform: translate(
+      calc((864 - 138 - var(--x)) * var(--u)),
+      calc((563.5 - 221.5 - var(--y)) * var(--u))
+    )
+    scale(1.3406);
+  transition-delay: 90ms;
+}
+
+.stage[data-open] .card:not([data-selected]) {
+  opacity: 0;
+  transform: translateY(calc(48 * var(--u))) scale(0.94);
+  pointer-events: none;
+  transition-duration: 420ms;
+  transition-delay: calc(var(--i) * 30ms);
+}
+
+/* ---------- details and description cards ---------- */
+
+.detail {
+  position: absolute;
+  top: calc(281 * var(--u));
+  left: calc(var(--dx) * var(--u));
+  width: calc(346 * var(--u));
+  height: calc(561 * var(--u));
+  z-index: 1;
+  opacity: 0;
+  transform: translateX(calc(var(--from) * var(--u))) scale(0.8);
+  pointer-events: none;
+  transition:
+    transform 380ms var(--ease-in-out),
+    opacity 260ms ease;
+}
+
+.stage[data-open] .detail {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    transform 850ms var(--ease-out),
+    opacity 500ms ease;
+  transition-delay: 420ms;
+}
+
+.detailLeft {
+  --dx: 229;
+  --from: 462;
+}
+
+.detailRight {
+  --dx: 1147;
+  --from: -456;
+}
+
+.detailArt {
+  position: absolute;
+  inset: calc(-14 * var(--u));
+}
+
+.detailArt img {
+  object-fit: fill;
+}
+
+.photo {
+  position: absolute;
+  left: calc(70 * var(--u));
+  width: calc(206 * var(--u));
+  height: calc(137 * var(--u));
+  overflow: hidden;
+  border-radius: calc(22 * var(--u));
+  background: #2a2230;
+}
+
+.photo img {
+  object-fit: cover;
+}
+
+.detailLeft .photo {
+  top: calc(90 * var(--u));
+}
+
+.detailRight .photo {
+  top: calc(363 * var(--u));
+}
+
+.facts {
+  position: absolute;
+  left: calc(56 * var(--u));
+  top: calc(229 * var(--u));
+  margin: 0;
+  color: var(--ink);
+  font-size: max(calc(26 * var(--u)), 14px);
+  line-height: max(calc(42 * var(--u)), 22px);
+  letter-spacing: 0.01em;
+}
+
+.facts div {
+  display: flex;
+  gap: 0.35em;
+}
+
+.facts dt::after {
+  content: " :";
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.description {
+  position: absolute;
+  left: calc(70 * var(--u));
+  top: calc(75 * var(--u));
+  width: calc(212 * var(--u));
+  max-height: calc(280 * var(--u));
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: max(calc(15.5 * var(--u)), 11px);
+  line-height: max(calc(24 * var(--u)), 16px);
+  text-wrap: pretty;
+}
+
+.close {
+  position: absolute;
+  left: 50%;
+  top: calc(900 * var(--u));
+  z-index: 4;
+  translate: -50% 0;
+  padding: 0.4em 1em;
+  border: 1px solid #c9a15e;
+  border-radius: 999px;
+  background: #1d1512;
+  color: #e3c07f;
+  font-size: max(calc(22 * var(--u)), 14px);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.close:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  outline: 2px solid #e3c07f;
+  outline-offset: 3px;
+}
+
+/* ---------- reduced motion: keep the state changes, drop the travel ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation-name: fade;
+    animation-duration: 400ms;
+    animation-delay: 0ms;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .card,
+  .detail,
+  .stage[data-open] .detail,
+  .lift {
+    transition-duration: 200ms;
+    transition-delay: 0ms;
+  }
+
+  .stage[data-open] .card[data-selected] {
+    transition-delay: 0ms;
+  }
+
+  .detail {
+    transform: none;
+  }
+}
