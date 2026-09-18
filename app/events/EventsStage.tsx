@@ -34,6 +34,8 @@ export default function EventsStage({ fontClass }: { fontClass: string }) {
     if (openSlug) cardRefs.current[openSlug]?.focus({ preventScroll: true });
     setOpenSlug(null);
     history.pushState(null, "", window.location.pathname + window.location.search);
+    // on phones the opened event scrolls; bring the grid back into view
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [openSlug]);
 
   useEffect(() => {
@@ -64,7 +66,16 @@ export default function EventsStage({ fontClass }: { fontClass: string }) {
             type="button"
             className={styles.card}
             data-selected={selected ? "" : undefined}
-            style={{ "--x": event.x, "--y": event.y, "--i": i, "--pad": event.pad } as Vars}
+            style={
+              {
+                "--x": event.x,
+                "--y": event.y,
+                "--mx": event.mx,
+                "--my": event.my,
+                "--i": i,
+                "--pad": event.pad,
+              } as Vars
+            }
             aria-label={selected ? `Close ${event.name}` : `Open ${event.name}`}
             aria-expanded={selected}
             aria-controls="event-details"
@@ -74,14 +85,14 @@ export default function EventsStage({ fontClass }: { fontClass: string }) {
             <span className={styles.rise}>
               <span className={styles.lift}>
                 <span className={styles.glow} aria-hidden="true">
-                  <Image src={event.card} alt="" fill sizes="(min-width: 1728px) 420px, 24vw" />
+                  <Image src={event.card} alt="" fill sizes="(max-width: 767px) 60vw, (min-width: 1728px) 420px, 24vw" />
                 </span>
                 <span className={styles.art}>
                   <Image
                     src={event.card}
                     alt=""
                     fill
-                    sizes="(min-width: 1728px) 420px, 24vw"
+                    sizes="(max-width: 767px) 60vw, (min-width: 1728px) 420px, 24vw"
                     loading="eager"
                     draggable={false}
                   />
@@ -121,7 +132,7 @@ function Details({
       <div className={`${styles.detail} ${styles.detailLeft}`}>
         <BlankCard />
         <div className={styles.photo}>
-          <Image src={shown.photo} alt={`${shown.name} at WAVES`} fill sizes="240px" />
+          <Image src={shown.photo} alt={`${shown.name} at WAVES`} fill sizes="(max-width: 767px) 60vw, 240px" />
         </div>
         <dl className={styles.facts}>
           <div>
@@ -143,7 +154,7 @@ function Details({
         <BlankCard />
         <p className={styles.description}>{shown.description}</p>
         <div className={styles.photo}>
-          <Image src={shown.photo} alt="" fill sizes="240px" />
+          <Image src={shown.photo} alt="" fill sizes="(max-width: 767px) 60vw, 240px" />
         </div>
       </div>
 
@@ -159,7 +170,7 @@ function Details({
 function BlankCard() {
   return (
     <span className={styles.detailArt} aria-hidden="true">
-      <Image src="/events/card-blank.png" alt="" fill sizes="(min-width: 1728px) 400px, 22vw" />
+      <Image src="/events/card-blank.png" alt="" fill sizes="(max-width: 767px) 90vw, (min-width: 1728px) 400px, 22vw" />
     </span>
   );
 }
