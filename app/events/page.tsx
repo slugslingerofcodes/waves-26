@@ -3,6 +3,7 @@ import Image from "next/image";
 import localFont from "next/font/local";
 import EventsStage from "./EventsStage";
 import styles from "./events.module.css";
+import Navbar from "@/components/Navbar"
 
 const yasharth = localFont({
   src: "../../public/font/Yasharth.ttf",
@@ -25,6 +26,7 @@ export default function EventsPage() {
         sizes="100vw"
         className={styles.bg}
       />
+      <Navbar/>
       <h1 className={styles.title}>Events</h1>
       <EventsStage fontClass={yasharth.className} />
     </main>

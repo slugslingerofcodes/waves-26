@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import LampToggle from "./LampToggle";
 
+
 export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/" || pathname === "/home";
