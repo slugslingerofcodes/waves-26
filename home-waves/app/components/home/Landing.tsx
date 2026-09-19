@@ -97,7 +97,6 @@ export default function Landing({ phase }: { phase: Phase }) {
 
         <Countdown />
 
-        {/* TODO: point this at the real registration page. */}
         <Link href="/register" className={styles.register}>
           Register
         </Link>
