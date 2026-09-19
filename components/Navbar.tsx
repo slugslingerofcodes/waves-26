@@ -23,6 +23,13 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
+  // The home page and the registration pages draw their own Figma navigation
+  // (the home nav also recolours with its golden/ashes lantern), so this bar
+  // would sit on top of it.
+  if (pathname === "/" || pathname === "/register" || pathname.startsWith("/register/")) {
+    return null;
+  }
+
   const navItems = isHome
     ? ["Home", "Events", "Gallery", "About", "Sponsors"]
     : ["Home", "Events", "Gallery", "About", "Sponsors", "Register"];

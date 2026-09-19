@@ -53,7 +53,7 @@ export const ASSETS = {
 // Only pages that exist get an href; the rest render as inert buttons until their pages are built.
 export const NAV_LINKS: { label: string; href?: string }[] = [
   { label: "Home", href: "/" },
-  { label: "Events" },
+  { label: "Events", href: "/events" },
   { label: "Gallery" },
   { label: "About" },
   { label: "Sponsors" },
