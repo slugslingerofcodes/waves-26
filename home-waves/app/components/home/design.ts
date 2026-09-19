@@ -50,11 +50,12 @@ export const ASSETS = {
   hourglassAshes: "/assets/hourglass-ashes.webp",
 };
 
-export const NAV_LINKS = [
+// Only pages that exist get an href; the rest render as inert buttons until their pages are built.
+export const NAV_LINKS: { label: string; href?: string }[] = [
   { label: "Home", href: "/" },
-  { label: "Events", href: "/events" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "About", href: "/about" },
-  { label: "Sponsors", href: "/sponsors" },
-  { label: "Contact", href: "/contact" },
+  { label: "Events" },
+  { label: "Gallery" },
+  { label: "About" },
+  { label: "Sponsors" },
+  { label: "Contact" },
 ];

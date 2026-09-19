@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
-import DoorTransition from "./_doors/DoorTransition";
 import s from "./shell.module.css";
 
 /**
@@ -21,8 +20,6 @@ export const metadata: Metadata = {
 
 export default function RegisterLayout({ children }: LayoutProps<"/register">) {
   return (
-    <div className={`${playfair.variable} ${s.shell}`}>
-      <DoorTransition>{children}</DoorTransition>
-    </div>
+    <div className={`${playfair.variable} ${s.shell}`}>{children}</div>
   );
 }

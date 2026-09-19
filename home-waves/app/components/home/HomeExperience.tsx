@@ -9,8 +9,13 @@ import styles from "./home.module.css";
 export type Phase = "loading" | "intro" | "landing";
 
 const MIN_LOADING_MS = 1600;
-const INTRO_HOLD_MS = 800;
+// Loading fades to black (0.5s), the intro fades up (0.45s delay + 0.6s, see home.module.css),
+// then holds for Figma's 0.8s before animating into the landing page.
+const INTRO_HOLD_MS = 1050 + 800;
 const LOGO_CENTER_X = LAYERS.logo.final.x + LAYERS.logo.final.w / 2;
+
+// Survives client-side navigation: once the intro has played, returning home goes straight to the landing page.
+let introPlayed = false;
 
 function subscribe(onChange: () => void) {
   window.addEventListener("resize", onChange);
@@ -26,9 +31,11 @@ function useViewport() {
 export default function HomeExperience() {
   const { w, h } = useViewport();
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<Phase>("loading");
+  const [bgReady, setBgReady] = useState(false);
+  const [phase, setPhase] = useState<Phase>(() => (introPlayed ? "landing" : "loading"));
 
   useEffect(() => {
+    if (introPlayed) return;
     let cancelled = false;
     const timers: number[] = [];
     const start = performance.now();
@@ -51,12 +58,13 @@ export default function HomeExperience() {
       });
 
     // Load the loading screen's own background first so it isn't competing with the big layers.
-    const everything = load(ASSETS.loadingBg).then(() =>
-      Promise.all([
+    const everything = load(ASSETS.loadingBg).then(() => {
+      if (!cancelled) setBgReady(true);
+      return Promise.all([
         ...sources.map((src) => load(src).then(() => void (done += 1))),
         document.fonts.ready.then(() => void (done += 1)),
-      ]),
-    );
+      ]);
+    });
     const minDelay = new Promise((r) => timers.push(window.setTimeout(r, MIN_LOADING_MS)));
 
     Promise.all([everything, minDelay]).then(() => {
@@ -64,12 +72,15 @@ export default function HomeExperience() {
       clearInterval(ticker);
       setProgress(1);
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const toLanding = () => {
+        introPlayed = true;
+        setPhase("landing");
+      };
       timers.push(
         window.setTimeout(() => {
-          setPhase(reduceMotion ? "landing" : "intro");
-          if (!reduceMotion) {
-            timers.push(window.setTimeout(() => setPhase("landing"), INTRO_HOLD_MS));
-          }
+          if (reduceMotion) return toLanding();
+          setPhase("intro");
+          timers.push(window.setTimeout(toLanding, INTRO_HOLD_MS));
         }, 300),
       );
     });
@@ -90,13 +101,16 @@ export default function HomeExperience() {
     "--cover": cover,
     "--ui": Math.min(w / DESIGN_W, h / DESIGN_H),
     "--stage-x": `${(DESIGN_W / 2 - focusX) * cover}px`,
+    "--stage-top": `${(h - DESIGN_H * cover) / 2}px`,
     "--logo-fit": Math.min(1, (visibleW - 40) / LAYERS.logo.final.w),
   } as CSSProperties;
 
   return (
     <main className={styles.root} style={vars}>
       <Landing phase={phase} />
-      <LoadingScreen progress={progress} hidden={phase !== "loading"} />
+      {phase !== "landing" && (
+        <LoadingScreen progress={progress} bgReady={bgReady} hidden={phase !== "loading"} />
+      )}
     </main>
   );
 }

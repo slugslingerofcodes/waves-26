@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useId } from "react";
-import DoorLink from "./_doors/DoorLink";
+import DoorLink from "../_doors/DoorLink";
 import { PLATES } from "./plates";
 import s from "./registration.module.css";
 
@@ -165,7 +165,7 @@ export default function RegistrationStage({ mode }: { mode: Mode }) {
           sizes="(max-width: 1440px) 100vw, 1440px"
           placeholder="blur"
           blurDataURL={PLATES[mode].blurDataURL}
-          priority
+          preload
         />
 
         <h1 className={s.title}>

@@ -1,6 +1,8 @@
 import Image from "next/image";
-import DoorLink from "./_doors/DoorLink";
+import DoorLink from "../_doors/DoorLink";
+import Atmosphere from "./Atmosphere";
 import { PLATES } from "./plates";
+import SealOrb from "./SealOrb";
 import s from "./landing.module.css";
 
 /**
@@ -57,6 +59,14 @@ const pos = ([left, top, width, height]: [number, number, number, number]) => ({
   height: `${height}%`,
 });
 
+/**
+ * Lines a card's own crop of the plate up under its hotspot (background-size is
+ * set in CSS), so the hotspot can carry the card art when it lifts on hover.
+ */
+const cardArt = ([left, top]: [number, number, number, number]) => ({
+  backgroundPosition: `${(left / (100 - CARD_W)) * 100}% ${(top / (100 - CARD_H)) * 100}%`,
+});
+
 export default function LandingPage() {
   return (
     <main className={s.wrap}>
@@ -66,49 +76,50 @@ export default function LandingPage() {
           src={PLATES.main.src}
           alt="WAVES '26 — Ashes to Ascension"
           fill
+          // Served as-is (already a compact webp) so it matches, pixel for pixel, the
+          // crops of the same file that the cards and seal draw over it.
+          unoptimized
           sizes="(max-width: 1440px) 100vw, 1440px"
           placeholder="blur"
           blurDataURL={PLATES.main.blurDataURL}
-          priority
+          preload
         />
 
-        {NAV.map((item) =>
-          item.href ? (
-            <DoorLink
-              key={item.label}
-              className={s.hotspot}
-              style={pos(item.box)}
-              href={item.href}
-            >
+        {NAV.map((item) => {
+          const className = `${s.hotspot} ${item.side === "gold" ? s.hotGold : s.hotDark}`;
+          const style = { ...pos(item.box), ...cardArt(item.box) };
+          return item.href ? (
+            <DoorLink key={item.label} className={className} style={style} href={item.href}>
               <span className={s.srOnly}>{item.label}</span>
             </DoorLink>
           ) : (
-            <button
-              key={item.label}
-              className={s.hotspot}
-              style={pos(item.box)}
-              type="button"
-            >
+            <button key={item.label} className={className} style={style} type="button">
               <span className={s.srOnly}>{item.label}</span>
             </button>
-          ),
-        )}
+          );
+        })}
 
-        <DoorLink className={s.orb} style={pos(ORB)} href="/register/individual">
-          <span className={s.srOnly}>Register</span>
+        <SealOrb style={pos(ORB)} />
+
+        <DoorLink className={s.home} href="/">
+          Home
         </DoorLink>
       </div>
 
       {/* Shown instead of the composition on narrow screens, where the baked
           card lettering would be far too small to read. */}
       <nav className={s.compact} aria-label="WAVES '26">
+        <DoorLink className={`${s.home} ${s.homeCompact}`} href="/">
+          Home
+        </DoorLink>
+
         <Image
           className={s.wordmark}
           src="/waves/wordmark.webp"
           alt="WAVES '26 — Ashes to Ascension"
           width={660}
           height={260}
-          priority
+          preload
         />
 
         <DoorLink className={`${s.menuItem} ${s.menuRegister}`} href="/register/individual">
@@ -130,6 +141,8 @@ export default function LandingPage() {
           );
         })}
       </nav>
+
+      <Atmosphere />
     </main>
   );
 }

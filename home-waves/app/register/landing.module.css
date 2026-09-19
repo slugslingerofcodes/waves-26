@@ -33,24 +33,39 @@
 
 /* ------------------------------------------------------------- hotspots */
 
+/*
+ * Each hotspot carries its own crop of the plate (positioned inline by
+ * `cardArt` in page.tsx), sitting exactly over the painted card. That lets the
+ * card itself lift, brighten and glow on hover -- the plaque effect from the
+ * Bhaaratbhushan/Waves_2026 portal -- instead of only lighting up in place.
+ */
 .hotspot {
   position: absolute;
   padding: 0;
   appearance: none;
-  background: none;
+  background-image: url("/waves/stage-main.webp");
+  background-repeat: no-repeat;
+  background-size: calc(1440 / 303 * 100%) calc(1024 / 167 * 100%);
   border: 0;
   border-radius: 1.1cqw;
   cursor: pointer;
-  transition: backdrop-filter 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 300ms ease,
+    filter 300ms ease,
+    box-shadow 300ms ease;
 }
 
-/*
- * `backdrop-filter` lights the painted card up in place. A transform would
- * scale the hotspot but not the artwork beneath it, which reads as a bug.
- */
 .hotspot:hover {
-  backdrop-filter: brightness(1.18) saturate(1.12);
-  box-shadow: 0 0 2.2cqw rgba(255, 226, 170, 0.34);
+  transform: translateY(-0.28cqw);
+  filter: brightness(1.1) saturate(1.25);
+}
+
+.hotDark:hover {
+  box-shadow: 0 1.25cqw 1.8cqw rgba(216, 71, 31, 0.5), 0 0 2.2cqw rgba(216, 71, 31, 0.35);
+}
+
+.hotGold:hover {
+  box-shadow: 0 1.25cqw 1.8cqw rgba(231, 189, 99, 0.55), 0 0 2.2cqw rgba(231, 189, 99, 0.4);
 }
 
 .hotspot:focus-visible {
@@ -58,21 +73,108 @@
   outline-offset: 0.22cqw;
 }
 
-.hotspot:active {
-  backdrop-filter: brightness(1.05) saturate(1.05);
+/* ----------------------------------------------------------------- home */
+
+/* Same look and spot as the forms' "Back" chip, in container units so it scales with the plate. */
+.home {
+  position: absolute;
+  left: 3%;
+  top: 4.4%;
+  padding: 0.49cqw 1.25cqw;
+  color: #f4e7d2;
+  font-family: var(--font-display), "Times New Roman", Times, serif;
+  font-size: 1.32cqw;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  background: rgba(12, 10, 8, 0.42);
+  border: max(1px, 0.07cqw) solid rgba(193, 143, 87, 0.9);
+  border-radius: 0.28cqw;
+  backdrop-filter: blur(3px);
+  text-shadow: 0 0.07cqw 0.21cqw rgba(0, 0, 0, 0.85);
+  transition: background-color 160ms ease;
+}
+
+.home::before {
+  content: "← ";
+}
+
+.home:hover {
+  background: rgba(12, 10, 8, 0.62);
+}
+
+.home:active {
   box-shadow: var(--press-shadow);
 }
 
+.home:focus-visible {
+  outline: 0.14cqw solid #f4e7d2;
+  outline-offset: 0.14cqw;
+}
+
+.hotspot:active {
+  transform: translateY(0);
+  filter: brightness(1.05) saturate(1.05);
+  box-shadow: var(--press-shadow);
+}
+
+/* The seal: see SealOrb.tsx. --rx/--ry are set from the pointer position. */
 .orb {
   position: absolute;
   border-radius: 50%;
   cursor: pointer;
-  transition: backdrop-filter 180ms ease, box-shadow 180ms ease;
+  perspective: 900px;
 }
 
-.orb:hover {
-  backdrop-filter: brightness(1.2) saturate(1.15);
-  box-shadow: 0 0 3.4cqw rgba(255, 208, 120, 0.5);
+.orbAura {
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 45%, rgba(231, 189, 99, 0.55), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(216, 71, 31, 0.5), transparent 55%);
+  filter: blur(2.6cqw);
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.orbArt {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* The orb's own patch of the plate: a 290px circle at (578, 432) on the 1440x1024 frame. */
+  background: url("/waves/stage-main.webp") no-repeat;
+  background-size: calc(1440 / 290 * 100%) calc(1024 / 290 * 100%);
+  background-position: calc(578 / (1440 - 290) * 100%) calc(432 / (1024 - 290) * 100%);
+  filter: drop-shadow(0 0.8cqw 2.8cqw rgba(0, 0, 0, 0.7));
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--swell, 1));
+  transition: transform 200ms ease-out, filter 300ms ease;
+}
+
+.orbSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, rgba(255, 241, 200, 0.35), transparent 45%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.orb:hover .orbAura,
+.orb:focus-visible .orbAura {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.orb:hover .orbArt,
+.orb:focus-visible .orbArt {
+  --swell: 1.04;
+  filter: drop-shadow(0 1.5cqw 3.8cqw rgba(231, 150, 70, 0.45));
+}
+
+.orb:hover .orbSheen,
+.orb:focus-visible .orbSheen {
+  opacity: 1;
 }
 
 .orb:focus-visible {
@@ -80,9 +182,71 @@
   outline-offset: 0.3cqw;
 }
 
-.orb:active {
-  backdrop-filter: brightness(1.06) saturate(1.06);
-  box-shadow: var(--press-shadow);
+.orb:active .orbArt {
+  --swell: 1;
+  filter: brightness(0.95) drop-shadow(0 0.8cqw 2.8cqw rgba(0, 0, 0, 0.7));
+}
+
+/* ------------------------------------------------------------- atmosphere */
+
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.fxToggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-display), "Times New Roman", Times, serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.fxToggle:hover {
+  color: #fff;
+  border-color: rgba(231, 189, 99, 0.5);
+}
+
+.fxToggle:focus-visible {
+  outline: 2px solid #e7bd63;
+  outline-offset: 2px;
+}
+
+.fxIcon,
+.fxIconOn {
+  width: 14px;
+  height: 14px;
+  fill: rgba(255, 255, 255, 0.35);
+  transition: fill 160ms ease;
+}
+
+.fxIconOn {
+  fill: #e7bd63;
+}
+
+@media (max-width: 639px) {
+  .fxLabel {
+    display: none;
+  }
 }
 
 .srOnly {
@@ -154,10 +318,33 @@
     border-radius: 6px;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
     cursor: pointer;
-    transition: box-shadow 140ms ease;
+    transition:
+      transform 300ms ease,
+      box-shadow 300ms ease,
+      text-shadow 300ms ease,
+      filter 300ms ease;
+  }
+
+  .menuItem:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1) saturate(1.2);
+  }
+
+  .menuDark:hover {
+    color: #fff;
+    text-shadow: 0 0 12px rgba(255, 90, 55, 0.6), 0 0 26px rgba(200, 40, 15, 0.4), 0 2px 4px rgba(0, 0, 0, 0.95);
+    box-shadow: 0 10px 22px rgba(216, 71, 31, 0.45);
+  }
+
+  .menuGold:hover,
+  .menuRegister:hover {
+    color: #fff;
+    text-shadow: 0 0 12px rgba(240, 214, 150, 0.55), 0 0 26px rgba(210, 165, 80, 0.35), 0 2px 4px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 10px 22px rgba(231, 189, 99, 0.45);
   }
 
   .menuItem:active {
+    transform: translateY(0);
     box-shadow: var(--press-shadow);
   }
 
@@ -177,5 +364,21 @@
     background-image: url("/waves/chip-gold.png");
     border: 2px solid rgba(255, 208, 120, 0.9);
     box-shadow: 0 0 18px rgba(255, 208, 120, 0.3);
+  }
+
+  /* The compact menu is a flex column, so the chip sits in the flow instead of floating. */
+  .homeCompact {
+    position: static;
+    align-self: flex-start;
+    padding: 6px 14px;
+    font-size: 16px;
+    border-width: 1px;
+    border-radius: 4px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  }
+
+  .homeCompact:focus-visible {
+    outline-width: 2px;
+    outline-offset: 2px;
   }
 }

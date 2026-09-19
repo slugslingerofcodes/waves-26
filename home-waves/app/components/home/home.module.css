@@ -45,7 +45,7 @@
   z-index: 10;
   overflow: hidden;
   background: #030100;
-  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
 }
 
 .loadingHidden {
@@ -53,8 +53,14 @@
   visibility: hidden;
 }
 
-.loading img {
-  animation: fadeIn 0.6s ease both;
+/* The text and bar show at once; the painted background fades in when it has arrived. */
+.loadingBg {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.loadingBgReady {
+  opacity: 1;
 }
 
 .loadingText {
@@ -100,6 +106,12 @@
 .landing {
   position: absolute;
   inset: 0;
+  /* Waits for the loading screen to fade out, so the two logos never overlap. */
+  transition: opacity 0.6s ease 0.45s;
+}
+
+.landing[data-phase="loading"] {
+  opacity: 0;
 }
 
 .foreground img {
@@ -200,17 +212,33 @@
   clip-path: polygon(0 0, 100% 0, 100% 95px, 95px 95px, 95px 34px, 0 34px);
 }
 
+/*
+ * The keyframes animate --swing; --sway scales it. Hover eases --sway to 0, so the
+ * lantern settles upright smoothly instead of snapping when the animation stops.
+ */
+@property --swing {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --sway {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
 .lanternSwing {
   clip-path: polygon(0 34px, 95px 34px, 95px 95px, 100% 95px, 100% 100%, 0 100%);
   transform-origin: 80px 28px;
+  transform: rotate(calc(var(--swing) * var(--sway)));
   animation: swing 4s ease-in-out infinite;
-  transition: transform 0.3s ease;
+  transition: --sway 0.3s ease;
 }
 
 .lantern:hover .lanternSwing,
 .lantern:focus-visible .lanternSwing {
-  animation: none;
-  transform: rotate(0deg);
+  --sway: 0;
 }
 
 .lanternGlow {
@@ -333,17 +361,13 @@
 /* ---------- Animations ---------- */
 
 @keyframes swing {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
+  0%, 100% { --swing: -5deg; }
+  50% { --swing: 5deg; }
 }
 
 @keyframes glow {
   0%, 100% { filter: drop-shadow(0 0 0 transparent); opacity: 0.8; }
   50% { filter: drop-shadow(0 0 14px rgb(249 230 193 / 0.55)); opacity: 1; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
 }
 
 @keyframes pulse {
@@ -354,6 +378,12 @@
 /* ---------- Small screens ---------- */
 
 @media (max-width: 767px) {
+  /* Logo sits in the scaled (and possibly top-cropped) stage, so convert the nav's
+     screen position into stage pixels. */
+  .landing {
+    --logo-drop: calc((var(--nav-bottom, 0px) + 12px - var(--stage-top, 0px)) / var(--cover));
+  }
+
   .nav {
     top: 12px;
     left: 12px;
@@ -379,6 +409,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .layer,
+  .landing,
   .ui {
     transition: none;
   }
