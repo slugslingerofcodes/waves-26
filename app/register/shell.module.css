@@ -10,6 +10,30 @@
     inset 0 3px 11px rgba(0, 0, 0, 0.72),
     0 0 24px rgba(255, 208, 120, 0.45);
 
+  /*
+   * Colour grade for the painted plates, which ship flat and milky out of
+   * Figma. It is applied to each page's `.stage`, never to the plate image
+   * alone: the card hotspots and the seal redraw crops of that same file over
+   * the top, so grading only the plate would leave them a visibly different
+   * colour wherever they sit or lift on hover.
+   *
+   * There is no single grade for all three plates, because their exposures are
+   * nowhere near each other -- mean luminance runs 0.66 for the individual
+   * plate, 0.34 for this one and 0.17 for the team plate. `contrast()` always
+   * pivots on mid-grey, so one setting that suits the dark plates blows the
+   * bright one out: contrast(1.2) flat across all three drove 13% of the
+   * individual plate to pure white and took the gold frame's modelling with it.
+   * Each plate therefore carries its own, with `brightness()` ahead of the
+   * contrast to move its content toward the pivot before the stretch -- down
+   * for the bright plate, up for the dark one. The overrides live beside the
+   * themes in registration.module.css.
+   *
+   * This one is for the landing plate: measured over its histogram it sends
+   * 6.9% of pixels to black and 0.5% to white, which is haze at the bottom of
+   * an already near-black painting rather than detail worth keeping.
+   */
+  --plate-grade: contrast(1.1) saturate(1.14);
+
   flex: 1;
   background: #05070a;
   color: #ededed;

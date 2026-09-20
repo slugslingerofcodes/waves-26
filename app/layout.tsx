@@ -33,8 +33,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        <DoorTransition>{children}</DoorTransition>
+        {/* Inside the doors so the navbar's links can drive the transition too. */}
+        <DoorTransition>
+          <Navbar />
+          {children}
+        </DoorTransition>
       </body>
     </html>
   );

@@ -23,6 +23,9 @@
   aspect-ratio: 1440 / 1024;
   container-type: inline-size;
   overflow: hidden;
+  /* Grades the plate and the crops of it that the cards and seal draw, as one.
+     Atmosphere's canvas and toggle are siblings, so they stay ungraded. */
+  filter: var(--plate-grade);
 }
 
 .plate {

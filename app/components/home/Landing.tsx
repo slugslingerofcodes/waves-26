@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import DoorLink from "../../_doors/DoorLink";
-import { ASSETS, LAYERS, NAV_LINKS, type Box } from "./design";
+import { NAV_LINKS } from "@/components/nav-links";
+import { ASSETS, LAYERS, type Box } from "./design";
 import Countdown from "./Countdown";
 import type { Phase } from "./HomeExperience";
 import styles from "./home.module.css";
@@ -48,7 +48,7 @@ function Layer({
   const { final, intro } = LAYERS[name];
   return (
     <div className={`${styles.layer} ${className}`} style={layerStyle(final, intro, atIntro, finalTransform)}>
-      <Image src={src} alt={alt} fill unoptimized />
+      <Image src={src} alt={alt} fill unoptimized preload />
     </div>
   );
 }
@@ -97,9 +97,9 @@ export default function Landing({ phase }: { phase: Phase }) {
         <nav ref={navRef} className={styles.nav} aria-label="Main">
           {NAV_LINKS.map((link) =>
             link.href ? (
-              <Link key={link.label} href={link.href} className={styles.navLink}>
+              <DoorLink key={link.label} href={link.href} className={styles.navLink}>
                 {link.label}
-              </Link>
+              </DoorLink>
             ) : (
               <button key={link.label} type="button" className={styles.navLink}>
                 {link.label}
