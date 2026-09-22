@@ -34,6 +34,53 @@
   translate: -50% -50%;
 }
 
+/* ---------- the clouds that draw back on arrival ---------- */
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 30; /* over the page, under the navbar, as the frame shows it */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bank {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* the two overlap across the middle, so nothing shows between them */
+  width: 58.5%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition:
+    transform 1800ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 1800ms ease-in;
+  will-change: transform;
+}
+
+.bankLeft {
+  left: 0;
+  /* anchor the wispy inner edge, so a narrow viewport crops the outer side */
+  background-image: url("/sponsors/cloud-left.webp");
+  background-position: right center;
+}
+
+.bankRight {
+  right: 0;
+  background-image: url("/sponsors/cloud-right.webp");
+  background-position: left center;
+}
+
+.veilParting .bankLeft {
+  transform: translate3d(-104%, -3%, 0);
+  opacity: 0;
+}
+
+.veilParting .bankRight {
+  transform: translate3d(104%, -3%, 0);
+  opacity: 0;
+}
+
 /* ---------- heading ---------- */
 
 .title {
@@ -197,5 +244,9 @@
 @media (prefers-reduced-motion: reduce) {
   .pedestal {
     animation: none;
+  }
+
+  .bank {
+    transition: none;
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SponsorsMarquee from "./SponsorsMarquee";
+import SponsorsVeil from "./SponsorsVeil";
 import styles from "./sponsors.module.css";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function SponsorsPage() {
         </h1>
         <SponsorsMarquee />
       </div>
+      <SponsorsVeil />
     </main>
   );
 }
