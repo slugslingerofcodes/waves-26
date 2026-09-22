@@ -1,0 +1,216 @@
+/*
+ * Laid out on the Figma frame (1728 x 1117), same idiom as the Events page:
+ * --u is one Figma pixel on screen, so every measurement below is written as
+ * (figma px) * var(--u).
+ */
+
+.page {
+  --u: min(calc(100vw / 1728), calc(100dvh / 1117));
+  /* pedestal box, and the distance between two pedestals in a row */
+  --pw: 276;
+  --ph: 146;
+  --pitch: 641;
+  /* one full cycle of the marquee */
+  --dur: 48s;
+
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #e7cfa1;
+  isolation: isolate;
+}
+
+/*
+ * The cloudscape export drops in at public/sponsors/bg-clouds.webp. Until it
+ * lands the gradient underneath stands in, so the page never shows a gap.
+ */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    url("/sponsors/bg-clouds.webp") center / cover no-repeat,
+    radial-gradient(120% 90% at 50% 18%, #fdf3da 0%, #f1dcae 45%, #d9b981 100%);
+}
+
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(1728 * var(--u));
+  height: calc(1117 * var(--u));
+  translate: -50% -50%;
+}
+
+/* ---------- heading ---------- */
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(288 * var(--u));
+  margin: 0;
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(85 * var(--u));
+  line-height: 1.06;
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: #171310;
+}
+
+.title span {
+  display: block;
+}
+
+/* ---------- pedestal rows ---------- */
+
+.rows {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(633 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(19 * var(--u));
+}
+
+.row {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: drift var(--dur) linear infinite;
+}
+
+/*
+ * A negative delay starts the row part-way through the same cycle. One copy is
+ * five pedestals wide, so a tenth of the cycle is half a pitch -- the stagger
+ * the frame draws between the two rows.
+ */
+.trackOffset {
+  animation-delay: calc(var(--dur) / -10);
+}
+
+.rows:hover .track,
+.rows:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes drift {
+  from {
+    /* one of the three copies */
+    transform: translateX(calc(-100% / 3));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.slot {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  width: calc(var(--pitch) * var(--u));
+}
+
+/*
+ * The pedestal art drops in at public/sponsors/pedestal.png; the gradients
+ * below stand in for it until then.
+ */
+.pedestal {
+  position: relative;
+  width: calc(var(--pw) * var(--u));
+  height: calc(var(--ph) * var(--u));
+  background:
+    url("/sponsors/pedestal.png") center / contain no-repeat,
+    radial-gradient(60% 34% at 50% 34%, #fbf0d4 0%, #e3c68a 60%, #c39b56 100%),
+    radial-gradient(64% 54% at 50% 62%, #3b4f7d 0%, #26365c 100%);
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: calc(var(--phase) * -0.8s);
+}
+
+.rows:hover .pedestal,
+.rows:focus-within .pedestal {
+  animation-play-state: paused;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(calc(-6 * var(--u)));
+  }
+  50% {
+    transform: translateY(calc(6 * var(--u)));
+  }
+}
+
+/* the flat top of the dais, where a logo sits */
+.face {
+  position: absolute;
+  left: 22%;
+  top: 10%;
+  width: 56%;
+  height: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  object-fit: contain;
+}
+
+.name {
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(19 * var(--u));
+  line-height: 1.1;
+  text-align: center;
+  color: #4a3417;
+}
+
+/* ---------- phones ---------- */
+
+@media (max-width: 767px) {
+  .page {
+    /* scale to the phone's width instead of the desktop frame, and sit the
+       pedestals closer together so more than one is on screen at a time */
+    --u: calc(100vw / 760);
+    --pitch: 340;
+    display: flex;
+    align-items: center;
+  }
+
+  .frame {
+    position: static;
+    width: 100%;
+    height: auto;
+    translate: none;
+    padding: calc(120 * var(--u)) 0 calc(80 * var(--u));
+  }
+
+  .title {
+    position: static;
+    font-size: calc(74 * var(--u));
+    margin-bottom: calc(110 * var(--u));
+  }
+
+  .rows {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .pedestal {
+    animation: none;
+  }
+
+  /* nothing moves, so the rest of the sponsors have to be reachable by hand */
+  .row {
+    overflow-x: auto;
+  }
+}
