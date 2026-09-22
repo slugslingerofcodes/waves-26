@@ -23,16 +23,10 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
-  // The home page and the registration pages draw their own Figma navigation
-  // (the home nav also recolours with its golden/ashes lantern), so this bar
-  // would sit on top of it.
-  if (pathname === "/" || pathname === "/register" || pathname.startsWith("/register/")) {
-    return null;
-  }
+  const isRegister = pathname === "/register" || pathname.startsWith("/register/");
+  const hideLogo = isHome || isRegister;
 
-  const navItems = isHome
-    ? ["Home", "Events", "Gallery", "About", "Sponsors"]
-    : ["Home", "Events", "Gallery", "About", "Sponsors", "Register"];
+  const navItems = ["Home", "Events", "Gallery", "About", "Sponsors", "Contact", "Register"];
 
   // Check if a nav item matches the current route
   const isActive = (item: string) => {
@@ -54,9 +48,9 @@ export default function Navbar() {
 
       <nav className="fixed inset-0 pointer-events-none z-50">
         
-        {/* Top Left: Waves Logo → links to home (hidden on home page) */}
-        {!isHome && (
-          <Link href="/home" className="absolute top-[-10px] left-[-10px] md:top-[-40px] md:left-[-30px] pointer-events-auto z-50">
+        {/* Top Left: Waves Logo → links to home (hidden on home and register pages) */}
+        {!hideLogo && (
+          <Link href="/" className="absolute top-[-10px] left-[-10px] md:top-[-40px] md:left-[-30px] pointer-events-auto z-50">
             <Image 
               src="/navbar/waves-logo.png" 
               alt="Waves Logo" 
@@ -69,24 +63,25 @@ export default function Navbar() {
         )}
 
         {/* Navigation Links - Top Right (desktop) */}
-        <div className="navbar-links-desktop absolute top-[20px] right-[20px] flex flex-row items-center gap-[clamp(12px,2.7vw,35px)] pointer-events-auto">
+        <div className={`navbar-desktop-menu hidden md:flex flex-row items-center gap-[clamp(16px,2vw,32px)] z-50 ${mobileMenuOpen ? 'open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item}
-              href={`/${item.toLowerCase().trim()}`}
-              className={`text-[clamp(16px,2.7vw,35px)] text-[#5C2E0E] leading-normal transition-all duration-200 ease-out hover:scale-125 hover:drop-shadow-lg${isActive(item) ? " navbar-link--active" : ""}`}
+              href={item === "Home" ? "/" : `/${item.toLowerCase().trim()}`}
+              className={`inline-block text-[30px] lg:text-[34px] text-[#f9e6c1] leading-[1.15] transition-all duration-300 ease-out hover:scale-110 hover:drop-shadow-[0_0_4px_#cdcdcd] focus-visible:scale-110 focus-visible:drop-shadow-[0_0_4px_#cdcdcd] focus-visible:outline-none${isActive(item) ? " navbar-link--active" : ""}`}
               style={{
                 fontFamily: "'Yasharth', sans-serif",
               }}
+              onClick={() => setMobileMenuOpen(false)}
             >
               {item}
             </Link>
           ))}
         </div>
 
-        {/* Hamburger Button - Mobile only */}
+        {/* Hamburger Button - Desktop & Mobile */}
         <button
-          className="navbar-hamburger pointer-events-auto z-50"
+          className="navbar-hamburger absolute top-[16px] right-[16px] md:top-[25px] md:right-[49px] pointer-events-auto z-[60]"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
           aria-expanded={mobileMenuOpen}
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -98,12 +93,12 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         <div
-          className={`navbar-mobile-menu pointer-events-auto z-50${mobileMenuOpen ? " navbar-mobile-menu--open" : ""}`}
+          className={`navbar-mobile-menu md:hidden pointer-events-auto z-50${mobileMenuOpen ? " navbar-mobile-menu--open" : ""}`}
         >
           {navItems.map((item) => (
             <Link
               key={item}
-              href={`/${item.toLowerCase().trim()}`}
+              href={item === "Home" ? "/" : `/${item.toLowerCase().trim()}`}
               className={`navbar-mobile-menu__link${isActive(item) ? " navbar-mobile-menu__link--active" : ""}`}
               style={{ fontFamily: "'Yasharth', sans-serif" }}
               onClick={() => setMobileMenuOpen(false)}
@@ -113,12 +108,6 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Lamp Toggle - Home page only */}
-        {isHome && (
-          <div className="absolute top-[120px] right-[-40px] md:top-[110px] md:right-[-75px] pointer-events-auto z-40 transition-all">
-            <LampToggle />
-          </div>
-        )}
       </nav>
     </>
   );

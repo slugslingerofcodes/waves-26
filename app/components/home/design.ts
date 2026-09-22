@@ -27,7 +27,7 @@ export const LAYERS = {
     intro: { x: 1720, y: 778, w: 655, h: 359 },
   },
   logo: {
-    final: { x: 161, y: 0, w: 845, h: 471 },
+    final: { x: 161, y: 60, w: 845, h: 471 },
     intro: { x: 68, y: -98, w: 1578, h: 880 },
   },
   ashes: {

@@ -58,19 +58,6 @@ export default function Landing({ phase }: { phase: Phase }) {
   const atIntro = phase !== "landing";
   const nextTheme: Theme = theme === "golden" ? "ashes" : "golden";
   const rootRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLElement>(null);
-
-  // Publish where the nav ends so the logo can clear it when the links wrap.
-  useEffect(() => {
-    const root = rootRef.current!;
-    const nav = navRef.current!;
-    const update = () =>
-      root.style.setProperty("--nav-bottom", `${nav.getBoundingClientRect().bottom}px`);
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(nav);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <div ref={rootRef} className={styles.landing} data-theme={theme} data-phase={phase}>
@@ -94,19 +81,6 @@ export default function Landing({ phase }: { phase: Phase }) {
       </div>
 
       <div className={styles.ui} aria-hidden={atIntro}>
-        <nav ref={navRef} className={styles.nav} aria-label="Main">
-          {NAV_LINKS.map((link) =>
-            link.href ? (
-              <Link key={link.label} href={link.href} className={styles.navLink}>
-                {link.label}
-              </Link>
-            ) : (
-              <button key={link.label} type="button" className={styles.navLink}>
-                {link.label}
-              </button>
-            ),
-          )}
-        </nav>
 
         <button
           type="button"

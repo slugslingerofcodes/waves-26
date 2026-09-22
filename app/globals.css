@@ -71,68 +71,89 @@ body {
 .lamp-container:hover .lamp-crossfade--2 { animation-delay: 1s; }
 .lamp-container:hover .lamp-crossfade--3 { animation-delay: 2s; }
 
-/* ── Navbar: hamburger + mobile menu (hidden by default) ────────────── */
+/* ── Navbar: hamburger + mobile menu ────────────── */
 
 .navbar-hamburger {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  position: absolute;
+  z-index: 60;
+  width: 38px;
+  height: 38px;
+  padding: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
-.navbar-mobile-menu {
-  display: none;
+.navbar-hamburger:hover .navbar-hamburger__bar {
+  background: #3a1a06;
+}
+.navbar-hamburger:hover .navbar-hamburger__bar.open {
+  background: #fff;
+}
+
+.navbar-hamburger__bar {
+  display: block;
+  width: 100%;
+  height: 3.5px;
+  background: #5C2E0E;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease, background 0.2s ease;
+  transform-origin: center;
+}
+
+.navbar-hamburger__bar.open {
+  background: #f9e6c1;
+}
+
+.navbar-hamburger__bar.open:nth-child(1) {
+  transform: translateY(9.5px) rotate(45deg);
+}
+.navbar-hamburger__bar.open:nth-child(2) {
+  opacity: 0;
+}
+.navbar-hamburger__bar.open:nth-child(3) {
+  transform: translateY(-9.5px) rotate(-45deg);
+}
+
+/* ── Desktop Expanded Menu ──────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .navbar-desktop-menu {
+    display: flex;
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    height: 58px;
+    padding-right: 70px;
+    padding-left: 80px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    
+    -webkit-mask-image: linear-gradient(to right, transparent, black 80px, black);
+    mask-image: linear-gradient(to right, transparent, black 80px, black);
+
+    opacity: 0;
+    pointer-events: none;
+    clip-path: inset(0 0 0 100%);
+    transition: clip-path 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  }
+  
+  .navbar-desktop-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 /* ── Mobile breakpoint ──────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* Hide desktop nav links */
-  .navbar-links-desktop {
-    display: none !important;
-  }
-
-  /* Show hamburger */
-  .navbar-hamburger {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 6px;
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 60;
-    width: 38px;
-    height: 38px;
-    padding: 5px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
-
-  .navbar-hamburger:hover .navbar-hamburger__bar {
-    background: #3a1a06;
-  }
-
-  .navbar-hamburger__bar {
-    display: block;
-    width: 100%;
-    height: 3.5px;
-    background: #5C2E0E;
-    border-radius: 2px;
-    transition: transform 0.3s ease, opacity 0.3s ease, background 0.2s ease;
-    transform-origin: center;
-  }
-
-  /* Animate bars into an ✕ when open */
-  .navbar-hamburger__bar.open:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-  .navbar-hamburger__bar.open:nth-child(2) {
-    opacity: 0;
-  }
-  .navbar-hamburger__bar.open:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
-
-  /* Mobile dropdown overlay */
   .navbar-mobile-menu {
     display: flex;
     flex-direction: column;
@@ -140,9 +161,9 @@ body {
     top: 64px;
     right: 16px;
     width: 220px;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(92, 46, 14, 0.15);
+    border: 1.5px solid rgba(249, 230, 193, 0.2);
     border-radius: 24px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     overflow: hidden;
@@ -165,17 +186,17 @@ body {
     padding: 14px 20px;
     font-size: 22px;
     text-align: center;
-    color: #5C2E0E;
+    color: #f9e6c1;
     text-decoration: none;
     transition: background 0.15s ease;
   }
 
   .navbar-mobile-menu__link:hover {
-    background: rgba(92, 46, 14, 0.08);
+    background: rgba(249, 230, 193, 0.15);
   }
 
   .navbar-mobile-menu__link + .navbar-mobile-menu__link {
-    border-top: 1px solid rgba(92, 46, 14, 0.1);
+    border-top: 1px solid rgba(249, 230, 193, 0.15);
   }
 
   .navbar-mobile-menu__link--active {

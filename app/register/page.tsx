@@ -101,17 +101,11 @@ export default function LandingPage() {
 
         <SealOrb style={pos(ORB)} />
 
-        <DoorLink className={s.home} href="/">
-          Home
-        </DoorLink>
       </div>
 
       {/* Shown instead of the composition on narrow screens, where the baked
           card lettering would be far too small to read. */}
       <nav className={s.compact} aria-label="WAVES '26">
-        <DoorLink className={`${s.home} ${s.homeCompact}`} href="/">
-          Home
-        </DoorLink>
 
         <Image
           className={s.wordmark}
