@@ -7,6 +7,8 @@ import s from "./sponsors.module.css";
 const HOLD_MS = 260;
 /** Keep in step with the bank transition in sponsors.module.css. */
 const PART_MS = 1800;
+/** How long a page that reports itself hidden waits to be looked at. */
+const WAIT_FOR_VIEW_MS = 2500;
 
 /**
  * Survives client-side navigation: the clouds part on the first arrival and
@@ -47,16 +49,25 @@ export default function SponsorsVeil() {
      * A hidden tab pauses the transition but keeps the timers running, so the
      * clouds would be taken away without ever having moved. Open in a
      * background tab and the reveal waits until the page is actually looked at.
+     *
+     * It only waits so long: some embedded browsers report hidden for a page
+     * that is plainly on screen, and a page stuck behind cloud is far worse
+     * than one that misses the reveal.
      */
     if (document.hidden) {
-      const onVisible = () => {
-        if (document.hidden) return;
+      const begin = () => {
         document.removeEventListener("visibilitychange", onVisible);
+        clearTimeout(fallback);
         start();
       };
+      const onVisible = () => {
+        if (!document.hidden) begin();
+      };
+      const fallback = window.setTimeout(begin, WAIT_FOR_VIEW_MS);
       document.addEventListener("visibilitychange", onVisible);
       return () => {
         document.removeEventListener("visibilitychange", onVisible);
+        clearTimeout(fallback);
         timers.forEach(clearTimeout);
       };
     }
