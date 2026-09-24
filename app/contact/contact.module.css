@@ -1,0 +1,325 @@
+/*
+ * Contact page — WAVES'26
+ * Layout: full-viewport background (contact-bg.webp) with a 3x2 grid of ContactCards.
+ * Styling follows the same CSS-module + Tailwind pattern used by /events.
+ *
+ * The page data lives in data/contacts.json — edit that file to populate cards.
+ */
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0d0906;
+}
+
+/* -- full-page background ------------------------------------------------- */
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.bg img {
+  object-fit: cover;
+}
+
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 10, 4, 0.25);
+  pointer-events: none;
+}
+
+/* -- visually hidden heading (accessible, like events page) --------------- */
+
+.title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* -- card grid ------------------------------------------------------------ */
+
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px 36px;
+  padding: 120px 40px 60px;
+  max-width: 1100px;
+  width: 100%;
+  justify-items: center;
+}
+
+/* -- contact card: the two-piece unit ------------------------------------- */
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 310px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.cardInteractive {
+  cursor: pointer;
+  outline: none;
+}
+
+.cardInteractive:hover .cardContainer {
+  transform: translateY(-5px) scale(1.02);
+}
+
+.cardInteractive:hover .frameGold {
+  border-color: #e5be7a;
+  box-shadow:
+    inset 0 0 25px rgba(201, 161, 94, 0.3),
+    0 0 28px rgba(201, 161, 94, 0.28);
+}
+
+.cardInteractive:hover .frameAshes {
+  border-color: #bd4444;
+  box-shadow:
+    inset 0 0 25px rgba(139, 45, 45, 0.32),
+    0 0 28px rgba(139, 45, 45, 0.3);
+}
+
+.cardInteractive:hover .nameplateWrap {
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
+}
+
+.cardInteractive:focus-visible .frameGold {
+  outline: 2px solid #e5be7a;
+  outline-offset: 4px;
+}
+
+.cardInteractive:focus-visible .frameAshes {
+  outline: 2px solid #bd4444;
+  outline-offset: 4px;
+}
+
+/* 
+ * Single container wrapping the square frame and nameplate banner.
+ * Ensures both pieces are horizontally centered relative to each other 
+ * as one cohesive unit across all screen sizes and cards.
+ */
+.cardContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* -- top piece: ornate square frame --------------------------------------- */
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* gold variant border */
+.frameGold {
+  border: 2.5px solid #c9a15e;
+  box-shadow:
+    inset 0 0 20px rgba(201, 161, 94, 0.15),
+    0 0 18px rgba(201, 161, 94, 0.12);
+  background: linear-gradient(
+    145deg,
+    rgba(30, 22, 14, 0.92) 0%,
+    rgba(20, 14, 8, 0.96) 100%
+  );
+}
+
+/* ashes variant border */
+.frameAshes {
+  border: 2.5px solid #8b2d2d;
+  box-shadow:
+    inset 0 0 20px rgba(139, 45, 45, 0.18),
+    0 0 18px rgba(139, 45, 45, 0.14);
+  background: linear-gradient(
+    145deg,
+    rgba(28, 12, 12, 0.92) 0%,
+    rgba(18, 8, 8, 0.96) 100%
+  );
+}
+
+/* decorative corner accents on the frame */
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.frameGold::before,
+.frameGold::after {
+  border-color: #d4af6a;
+}
+
+.frameAshes::before,
+.frameAshes::after {
+  border-color: #a33a3a;
+}
+
+.frame::before {
+  top: 8px;
+  left: 8px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.frame::after {
+  bottom: 8px;
+  right: 8px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+
+.emblem {
+  position: relative;
+  width: 65%;
+  height: 65%;
+}
+
+.emblem img {
+  object-fit: contain;
+}
+
+/* empty placeholder frame — no emblem, just the border */
+.frameEmpty {
+  /* intentionally blank interior */
+}
+
+/* -- bottom piece: nameplate banner (image-based) ------------------------- */
+
+/*
+ * The nameplate image has an intrinsic aspect ratio of roughly 1000:363
+ * (~2.75:1). We set the wrapper to match that ratio so the image is never
+ * stretched or squashed. A negative top margin tucks the nameplate's
+ * ornamental top-point under the square frame above.
+ */
+.nameplateWrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 1000 / 363;
+  margin-top: -16px;
+}
+
+.nameplateWrap img {
+  object-fit: contain;
+}
+
+/* -- text overlay on the nameplate ---------------------------------------- */
+
+/*
+ * Absolutely positioned inside the nameplate wrapper.
+ * Horizontally and vertically centered within the visible banner interior
+ * (the ornamental border adds visual padding, so we inset the text area
+ * to sit within the inner region).
+ */
+.nameplateText {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12% 16% 14% 16%;
+  pointer-events: none;
+}
+
+.name {
+  font-family: var(--font-yasharth), "Yasharth", serif;
+  font-size: clamp(14px, 1.3vw, 20px);
+  color: #f0e2c4;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.role {
+  font-family: var(--font-yasharth), "Yasharth", serif;
+  font-size: clamp(11px, 0.9vw, 15px);
+  color: #a89a82;
+  line-height: 1.4;
+  margin: 4px 0 0;
+}
+
+.phone {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: clamp(10px, 0.8vw, 13px);
+  color: #8b2d2d;
+  line-height: 1.4;
+  margin: 3px 0 0;
+  letter-spacing: 0.03em;
+}
+
+/* -- tablet: 2 columns ---------------------------------------------------- */
+
+@media (max-width: 1199px) and (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 32px;
+    padding: 110px 32px 48px;
+    max-width: 720px;
+  }
+}
+
+/* -- mobile: 1 column ----------------------------------------------------- */
+
+@media (max-width: 639px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 100px 24px 40px;
+    max-width: 360px;
+  }
+
+  .name {
+    font-size: 16px;
+  }
+
+  .role {
+    font-size: 12px;
+  }
+
+  .phone {
+    font-size: 11px;
+  }
+}

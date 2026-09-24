@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Aarav Sharma",
+    "role": "Events Head",
+    "phone": "+91 9999900001",
+    "variant": "gold"
+  },
+  {
+    "id": 2,
+    "name": "Ananya Iyer",
+    "role": "Design Head",
+    "phone": "+91 9999900002",
+    "variant": "ashes"
+  },
+  {
+    "id": 3,
+    "name": "Rohan Verma",
+    "role": "Tech Lead",
+    "phone": "+91 9999900003",
+    "variant": "gold"
+  },
+  {
+    "id": 4,
+    "name": "Diya Patel",
+    "role": "Sponsorship Lead",
+    "phone": "+91 9999900004",
+    "variant": "gold"
+  },
+  {
+    "id": 5,
+    "name": "Kabir Mehta",
+    "role": "Marketing Head",
+    "phone": "+91 9999900005",
+    "variant": "gold"
+  },
+  {
+    "id": 6,
+    "name": "Sanya Malhotra",
+    "role": "Logistics Head",
+    "phone": "+91 9999900006",
+    "variant": "gold"
+  }
+]

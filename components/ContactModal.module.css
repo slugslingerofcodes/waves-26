@@ -1,0 +1,314 @@
+/* ── ContactModal styles ────────────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(7, 4, 2, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 0.22s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 18px;
+  padding: 40px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  animation: modalIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Gold variant modal styling ── */
+.modalGold {
+  border: 2px solid #c9a15e;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(45, 32, 18, 0.98) 0%,
+    rgba(22, 15, 8, 0.98) 75%
+  );
+  box-shadow:
+    inset 0 0 25px rgba(201, 161, 94, 0.16),
+    0 0 35px rgba(201, 161, 94, 0.22),
+    0 25px 50px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Ashes variant modal styling ── */
+.modalAshes {
+  border: 2px solid #8b2d2d;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(42, 16, 16, 0.98) 0%,
+    rgba(18, 8, 8, 0.98) 75%
+  );
+  box-shadow:
+    inset 0 0 25px rgba(139, 45, 45, 0.18),
+    0 0 35px rgba(139, 45, 45, 0.26),
+    0 25px 50px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Ornate corner accents matching the card frame aesthetic ── */
+.cornerTL,
+.cornerBR {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+
+.modalGold .cornerTL,
+.modalGold .cornerBR {
+  border-color: #e5be7a;
+}
+
+.modalAshes .cornerTL,
+.modalAshes .cornerBR {
+  border-color: #bd4444;
+}
+
+.cornerTL {
+  top: 10px;
+  left: 10px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.cornerBR {
+  bottom: 10px;
+  right: 10px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+
+/* ── Close button ── */
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  padding: 0;
+}
+
+.modalGold .closeBtn {
+  border: 1px solid rgba(201, 161, 94, 0.35);
+  color: #c9a15e;
+}
+
+.modalGold .closeBtn:hover {
+  background: rgba(201, 161, 94, 0.18);
+  border-color: #e5be7a;
+  color: #fdf7e7;
+  transform: scale(1.08);
+}
+
+.modalAshes .closeBtn {
+  border: 1px solid rgba(139, 45, 45, 0.45);
+  color: #a33a3a;
+}
+
+.modalAshes .closeBtn:hover {
+  background: rgba(139, 45, 45, 0.22);
+  border-color: #bd4444;
+  color: #fdf7e7;
+  transform: scale(1.08);
+}
+
+.closeBtn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ── Emblem centerpiece ── */
+.emblemWrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.modalGold .emblemWrapper {
+  border: 1.5px solid rgba(201, 161, 94, 0.45);
+  background: radial-gradient(
+    circle,
+    rgba(201, 161, 94, 0.15) 0%,
+    rgba(20, 14, 8, 0.7) 100%
+  );
+  box-shadow: 0 0 20px rgba(201, 161, 94, 0.15);
+}
+
+.modalAshes .emblemWrapper {
+  border: 1.5px solid rgba(139, 45, 45, 0.55);
+  background: radial-gradient(
+    circle,
+    rgba(139, 45, 45, 0.18) 0%,
+    rgba(18, 8, 8, 0.7) 100%
+  );
+  box-shadow: 0 0 20px rgba(139, 45, 45, 0.2);
+}
+
+.emblemImg {
+  position: relative;
+  width: 70%;
+  height: 70%;
+}
+
+.emblemImg img {
+  object-fit: contain;
+}
+
+/* ── Contact Details ── */
+.name {
+  font-family: var(--font-yasharth), "Yasharth", serif;
+  font-size: clamp(20px, 2.2vw, 25px);
+  color: #f7eed7;
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.role {
+  font-family: var(--font-yasharth), "Yasharth", serif;
+  font-size: clamp(13px, 1.1vw, 15px);
+  color: #b5a48b;
+  line-height: 1.4;
+  margin: 6px 0 0;
+}
+
+/* ── Ornate divider ── */
+.divider {
+  width: 75%;
+  height: 1px;
+  margin: 22px 0 20px;
+}
+
+.modalGold .divider {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 161, 94, 0.6) 50%,
+    transparent 100%
+  );
+}
+
+.modalAshes .divider {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 45, 45, 0.7) 50%,
+    transparent 100%
+  );
+}
+
+/* ── Phone contact action ── */
+.phoneSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.phoneLabel {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #8c7e6c;
+}
+
+.phoneLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.modalGold .phoneLink {
+  background: rgba(201, 161, 94, 0.1);
+  border: 1px solid rgba(201, 161, 94, 0.4);
+  color: #f4e8cf;
+}
+
+.modalGold .phoneLink:hover {
+  background: rgba(201, 161, 94, 0.2);
+  border-color: #e5be7a;
+  box-shadow: 0 0 16px rgba(201, 161, 94, 0.25);
+  transform: translateY(-2px);
+}
+
+.modalAshes .phoneLink {
+  background: rgba(139, 45, 45, 0.14);
+  border: 1px solid rgba(139, 45, 45, 0.5);
+  color: #f4e8cf;
+}
+
+.modalAshes .phoneLink:hover {
+  background: rgba(139, 45, 45, 0.25);
+  border-color: #bd4444;
+  box-shadow: 0 0 16px rgba(139, 45, 45, 0.3);
+  transform: translateY(-2px);
+}
+
+.phoneLink:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.phoneIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
