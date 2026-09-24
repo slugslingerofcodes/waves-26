@@ -178,7 +178,7 @@ nav[data-theme="dark"] .navbar-link {
 
 /* ── Desktop Expanded Menu ──────────────────────────────────────────── */
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   .navbar-desktop-menu {
     display: flex;
     position: absolute;
@@ -189,10 +189,27 @@ nav[data-theme="dark"] .navbar-link {
   }
 }
 
+/*
+ * Between the md breakpoint and about 960px the seven links are wider than the
+ * viewport, which pushed "Home" off the left edge. Tighten the bar until it
+ * fits; wider screens keep the full-size menu.
+ */
+@media (min-width: 768px) and (max-width: 960px) {
+  .navbar-desktop-menu {
+    padding-left: 30px;
+
+    -webkit-mask-image: linear-gradient(to right, transparent, black 34px, black);
+    mask-image: linear-gradient(to right, transparent, black 34px, black);
+  }
+
+  .navbar-desktop-menu a {
+    font-size: 24px;
+  }
+}
 
 /* ── Mobile breakpoint ──────────────────────────────────────────────── */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 
   /* Beige overlay card — slides in from the right */
   .navbar-mobile-overlay {
