@@ -6,6 +6,7 @@ import {
   motion,
 } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Navbar from "@/components/Navbar";
 
 const cards = [
   {
@@ -112,6 +113,7 @@ export default function GalleryPage() {
       className="relative isolate flex min-h-svh w-full items-center justify-center overflow-hidden bg-[#100202] text-[#f8e8c6]"
       aria-label="WAVES gallery"
     >
+      <Navbar />
       {/* Altar & Cavern Background (aligned on mobile to center the stone altar podium) */}
       <Image
         src="/gallery/bg-gallery-altar.png"

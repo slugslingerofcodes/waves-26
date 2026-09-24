@@ -15,7 +15,7 @@ export default function Navbar() {
   // Map routes to navbar colour themes
   const navTheme = (() => {
     if (isHome) return "light"; // brown on yellow bg
-    if (pathname.startsWith("/events") || pathname.startsWith("/register") || pathname.startsWith("/contact") || pathname.startsWith("/sponsors")) return "dark"; // gold on red/dark bg
+    if (pathname.startsWith("/events") || pathname.startsWith("/register") || pathname.startsWith("/contact") || pathname.startsWith("/sponsors") || pathname.startsWith("/gallery")) return "dark"; // gold on red/dark bg
     return "light"; // default brown (gallery, about, etc.)
   })();
 
