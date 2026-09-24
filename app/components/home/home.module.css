@@ -385,12 +385,7 @@
   }
 
   .nav {
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px 18px;
+    display: none;
   }
 
   .navLink {

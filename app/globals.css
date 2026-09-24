@@ -37,18 +37,37 @@ body {
 
 .navbar-link--active {
   text-shadow: 0 0 2px rgba(205, 205, 205, 1),
-               0 0 4px rgba(205, 205, 205, 0.6),
-               0 0 6px rgba(205, 205, 205, 0.3);
+    0 0 4px rgba(205, 205, 205, 0.6),
+    0 0 6px rgba(205, 205, 205, 0.3);
 }
 
 /* ── Lamp crossfade slideshow (pure CSS, no JS) ─────────────────────── */
 
 @keyframes lamp-crossfade {
-  0%      { opacity: 0; }
-  8.33%   { opacity: 1; }   /* fade in  (0% → 8.33% = 1s)  */
-  33.33%  { opacity: 1; }   /* hold     (8.33% → 33.33%)    */
-  41.67%  { opacity: 0; }   /* fade out (33.33% → 41.67%)   */
-  100%    { opacity: 0; }   /* stay hidden rest of cycle     */
+  0% {
+    opacity: 0;
+  }
+
+  8.33% {
+    opacity: 1;
+  }
+
+  /* fade in  (0% → 8.33% = 1s)  */
+  33.33% {
+    opacity: 1;
+  }
+
+  /* hold     (8.33% → 33.33%)    */
+  41.67% {
+    opacity: 0;
+  }
+
+  /* fade out (33.33% → 41.67%)   */
+  100% {
+    opacity: 0;
+  }
+
+  /* stay hidden rest of cycle     */
 }
 
 .lamp-crossfade {
@@ -57,9 +76,17 @@ body {
 }
 
 /* Default state when not animating */
-.lamp-crossfade--1 { opacity: 1; }
-.lamp-crossfade--2 { opacity: 0; }
-.lamp-crossfade--3 { opacity: 0; }
+.lamp-crossfade--1 {
+  opacity: 1;
+}
+
+.lamp-crossfade--2 {
+  opacity: 0;
+}
+
+.lamp-crossfade--3 {
+  opacity: 0;
+}
 
 /* Apply animation only when hovering over the container */
 .lamp-container:hover .lamp-crossfade {
@@ -67,9 +94,30 @@ body {
 }
 
 /* Maintain staggering when animating */
-.lamp-container:hover .lamp-crossfade--1 { animation-delay: 0s; opacity: 0; }
-.lamp-container:hover .lamp-crossfade--2 { animation-delay: 1s; }
-.lamp-container:hover .lamp-crossfade--3 { animation-delay: 2s; }
+.lamp-container:hover .lamp-crossfade--1 {
+  animation-delay: 0s;
+  opacity: 0;
+}
+
+.lamp-container:hover .lamp-crossfade--2 {
+  animation-delay: 1s;
+}
+
+.lamp-container:hover .lamp-crossfade--3 {
+  animation-delay: 2s;
+}
+
+/* ── Navbar: link colour themes ─────────────────────────────────────── */
+
+/* light theme: brown on yellow/white backgrounds (Home, Gallery, About) */
+nav[data-theme="light"] .navbar-link {
+  color: #5C2E0E;
+}
+
+/* dark theme: golden amber on red/dark backgrounds (Events, Register, Contact, Sponsors) */
+nav[data-theme="dark"] .navbar-link {
+  color: #DAA950;
+}
 
 /* ── Navbar: hamburger + mobile menu ────────────── */
 
@@ -88,9 +136,16 @@ body {
   cursor: pointer;
 }
 
+@media (min-width: 769px) {
+  .navbar-hamburger {
+    display: none;
+  }
+}
+
 .navbar-hamburger:hover .navbar-hamburger__bar {
   background: #3a1a06;
 }
+
 .navbar-hamburger:hover .navbar-hamburger__bar.open {
   background: #fff;
 }
@@ -106,15 +161,17 @@ body {
 }
 
 .navbar-hamburger__bar.open {
-  background: #f9e6c1;
+  background: #5C2E0E;
 }
 
 .navbar-hamburger__bar.open:nth-child(1) {
   transform: translateY(9.5px) rotate(45deg);
 }
+
 .navbar-hamburger__bar.open:nth-child(2) {
   opacity: 0;
 }
+
 .navbar-hamburger__bar.open:nth-child(3) {
   transform: translateY(-9.5px) rotate(-45deg);
 }
@@ -125,31 +182,13 @@ body {
   .navbar-desktop-menu {
     display: flex;
     position: absolute;
-    top: 15px;
-    right: 35px;
-    height: 58px;
-    padding-right: 70px;
-    padding-left: 80px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(12px);
-    border-top-right-radius: 30px;
-    border-bottom-right-radius: 30px;
-    
-    -webkit-mask-image: linear-gradient(to right, transparent, black 80px, black);
-    mask-image: linear-gradient(to right, transparent, black 80px, black);
-
-    opacity: 0;
-    pointer-events: none;
-    clip-path: inset(0 0 0 100%);
-    transition: clip-path 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-  }
-  
-  .navbar-desktop-menu.open {
+    top: 20px;
+    right: 20px;
     opacity: 1;
     pointer-events: auto;
-    clip-path: inset(0 0 0 0);
   }
 }
+
 
 /* ── Mobile breakpoint ──────────────────────────────────────────────── */
 
@@ -157,52 +196,43 @@ body {
   .navbar-mobile-menu {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 64px;
-    right: 16px;
-    width: 220px;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(249, 230, 193, 0.2);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
-    max-height: 0;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: transparent; /* Overlay handles the beige background */
     opacity: 0;
     pointer-events: none;
-    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.25s ease;
+    transition: opacity 0.3s ease;
     z-index: 59;
   }
 
   .navbar-mobile-menu--open {
-    max-height: 500px;
     opacity: 1;
     pointer-events: auto;
   }
 
   .navbar-mobile-menu__link {
     display: block;
-    padding: 14px 20px;
-    font-size: 22px;
+    position: relative;
+    padding: 16px 20px;
+    font-size: 32px;
     text-align: center;
-    color: #f9e6c1;
+    color: #5C2E0E;
     text-decoration: none;
-    transition: background 0.15s ease;
+    transition: transform 0.15s ease;
   }
 
   .navbar-mobile-menu__link:hover {
-    background: rgba(249, 230, 193, 0.15);
-  }
-
-  .navbar-mobile-menu__link + .navbar-mobile-menu__link {
-    border-top: 1px solid rgba(249, 230, 193, 0.15);
+    transform: scale(1.1);
   }
 
   .navbar-mobile-menu__link--active {
     background: transparent;
     text-shadow: 0 0 2px rgba(205, 205, 205, 1),
-                 0 0 4px rgba(205, 205, 205, 0.6),
-                 0 0 6px rgba(205, 205, 205, 0.3);
+      0 0 4px rgba(205, 205, 205, 0.6),
+      0 0 6px rgba(205, 205, 205, 0.3);
   }
 }
