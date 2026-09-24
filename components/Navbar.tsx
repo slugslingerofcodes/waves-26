@@ -31,6 +31,39 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
+  // Swipe detection for mobile menu
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.changedTouches[0].screenX;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const distance = touchStartX - touchEndX;
+
+      // Swipe left (finger moves left) -> open menu
+      if (distance > 50) {
+        setMobileMenuOpen(true);
+      }
+      // Swipe right (finger moves right) -> close menu
+      else if (distance < -50) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    // Attach listeners passively for better scroll performance
+    document.addEventListener("touchstart", handleTouchStart, { passive: true });
+    document.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
+
   const isRegister = pathname === "/register" || pathname.startsWith("/register/");
   const hideLogo = isHome || isRegister;
 
@@ -48,10 +81,9 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Full screen beige background overlay for mobile menu */}
+      {/* Full screen beige card overlay for mobile menu — slides down from top */}
       <div
-        className={`fixed inset-0 z-40 bg-[#F3E8D0] transition-opacity duration-300 md:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-40 bg-[#F3E8D0] md:hidden navbar-mobile-overlay ${mobileMenuOpen ? "navbar-mobile-overlay--open" : ""}`}
         onClick={() => setMobileMenuOpen(false)}
         aria-hidden="true"
       />
