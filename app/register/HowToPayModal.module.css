@@ -1,0 +1,84 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: #111;
+  color: #fff;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  padding: 32px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  font-family: inherit;
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: #d4af37;
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.steps {
+  line-height: 1.6;
+  font-size: 1.1rem;
+  padding-left: 20px;
+  color: #eee;
+}
+
+.steps li {
+  margin-bottom: 12px;
+}
+
+.steps strong {
+  color: #fff;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+.actions {
+  margin-top: 32px;
+  text-align: right;
+}
+
+.payNowBtn {
+  display: inline-block;
+  background: #d4af37;
+  color: #000;
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.payNowBtn:hover {
+  background: #f4cf57;
+}

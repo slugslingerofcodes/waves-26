@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import DoorLink from "../_doors/DoorLink";
 import Atmosphere from "./Atmosphere";
 import { PLATES } from "./plates";
 import SealOrb from "./SealOrb";
+import HowToPayModal from "./HowToPayModal";
 import s from "./landing.module.css";
 
 /**
@@ -37,7 +41,7 @@ const card = (x: number, y: number): [number, number, number, number] => [
 
 const NAV: Nav[] = [
   { label: "Rulebook", side: "dark", box: card(237, 303) },
-  { label: "Pay Now", side: "dark", box: card(174, 536) },
+  { label: "Pay Now", side: "dark", box: card(174, 536), href: "https://www.onlinesbi.sbi/sbicollect/icollecthome.htm" },
   { label: "How to Pay", side: "dark", box: card(330, 767) },
   { label: "Queries", side: "gold", box: card(905, 303) },
   { label: "Contention", side: "gold", box: card(963, 536) },
@@ -68,6 +72,8 @@ const cardArt = ([left, top]: [number, number, number, number]) => ({
 });
 
 export default function LandingPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <main className={s.wrap}>
       <div className={s.stage}>
@@ -88,6 +94,23 @@ export default function LandingPage() {
         {NAV.map((item) => {
           const className = `${s.hotspot} ${item.side === "gold" ? s.hotGold : s.hotDark}`;
           const style = { ...pos(item.box), ...cardArt(item.box) };
+          
+          if (item.label === "How to Pay") {
+            return (
+              <button key={item.label} className={className} style={style} type="button" onClick={() => setIsModalOpen(true)}>
+                <span className={s.srOnly}>{item.label}</span>
+              </button>
+            );
+          }
+
+          if (item.href?.startsWith("http")) {
+            return (
+              <a key={item.label} className={className} style={style} href={item.href} target="_blank" rel="noopener noreferrer">
+                <span className={s.srOnly}>{item.label}</span>
+              </a>
+            );
+          }
+
           return item.href ? (
             <DoorLink key={item.label} className={className} style={style} href={item.href}>
               <span className={s.srOnly}>{item.label}</span>
@@ -124,6 +147,23 @@ export default function LandingPage() {
           const className = `${s.menuItem} ${
             item.side === "gold" ? s.menuGold : s.menuDark
           }`;
+
+          if (item.label === "How to Pay") {
+            return (
+              <button key={item.label} className={className} type="button" onClick={() => setIsModalOpen(true)}>
+                {item.label}
+              </button>
+            );
+          }
+
+          if (item.href?.startsWith("http")) {
+            return (
+              <a key={item.label} className={className} href={item.href} target="_blank" rel="noopener noreferrer">
+                {item.label}
+              </a>
+            );
+          }
+
           return item.href ? (
             <DoorLink key={item.label} className={className} href={item.href}>
               {item.label}
@@ -137,6 +177,7 @@ export default function LandingPage() {
       </nav>
 
       <Atmosphere />
+      <HowToPayModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>
   );
 }
