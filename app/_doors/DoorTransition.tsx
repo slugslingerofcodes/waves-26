@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import Sand from "./Sand";
 import s from "./doors.module.css";
 
 /**
@@ -51,6 +52,7 @@ export default function DoorTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [phase, setPhase] = useState<Phase>("idle");
   const target = useRef<string | null>(null);
+  const [sand, setSand] = useState({ impact: 0, pour: 0 });
 
   const doorMs = useCallback(
     () =>
@@ -60,6 +62,19 @@ export default function DoorTransition({ children }: { children: ReactNode }) {
         : DOOR_MS,
     [],
   );
+
+  /*
+   * Sand is shed twice per navigation: once when the panels slam together and
+   * again as they part, so the slam is still falling as the doors open.
+   * A burst is a counter rather than mounted-then-unmounted state -- bumping it
+   * replays the animation through the key, and the grains end at zero opacity,
+   * so a spent burst can sit there harmlessly instead of needing its own timer
+   * to tear it down.
+   */
+  const kickSand = useCallback((kind: "impact" | "pour") => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setSand((s) => ({ ...s, [kind]: s[kind] + 1 }));
+  }, []);
 
   const navigate = useCallback(
     (href: string) => {
@@ -76,18 +91,22 @@ export default function DoorTransition({ children }: { children: ReactNode }) {
     if (phase !== "shutting") return;
     const id = setTimeout(() => {
       setPhase("shut");
+      kickSand("impact");
       if (target.current) router.push(target.current);
     }, doorMs() + SETTLE_MS);
     return () => clearTimeout(id);
-  }, [phase, router, doorMs]);
+  }, [phase, router, doorMs, kickSand]);
 
   // New route is live -> hold a beat on the crest, then open up.
   useEffect(() => {
     if (!target.current || pathname !== target.current) return;
     target.current = null;
-    const id = setTimeout(() => setPhase("opening"), HOLD_MS);
+    const id = setTimeout(() => {
+      setPhase("opening");
+      kickSand("pour");
+    }, HOLD_MS);
     return () => clearTimeout(id);
-  }, [pathname]);
+  }, [pathname, kickSand]);
 
   // Backstop: never leave the doors shut if the route does not arrive.
   useEffect(() => {
@@ -95,9 +114,10 @@ export default function DoorTransition({ children }: { children: ReactNode }) {
     const id = setTimeout(() => {
       target.current = null;
       setPhase("opening");
+      kickSand("pour");
     }, ROUTE_TIMEOUT_MS);
     return () => clearTimeout(id);
-  }, [phase]);
+  }, [phase, kickSand]);
 
   useEffect(() => {
     if (phase !== "opening") return;
@@ -120,6 +140,8 @@ export default function DoorTransition({ children }: { children: ReactNode }) {
         <div className={`${s.panel} ${s.left}`} />
         <div className={`${s.panel} ${s.right}`} />
         <div className={s.crest} />
+        {sand.impact > 0 && <Sand key={`impact-${sand.impact}`} kind="impact" />}
+        {sand.pour > 0 && <Sand key={`pour-${sand.pour}`} kind="pour" />}
       </div>
     </DoorContext.Provider>
   );

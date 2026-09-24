@@ -95,6 +95,245 @@
     transform 360ms cubic-bezier(0.2, 0.8, 0.3, 1) 200ms;
 }
 
+/*
+ * Sand shed by the seam -- the tomb-door pour.
+ *
+ * Grains are matte and hold their size, and they blend normally rather than on
+ * `screen`, so they read against the bright landing art as well as the
+ * near-black card. A spent burst is left mounted at zero opacity until the next
+ * navigation replays it.
+ *
+ * No `will-change` here on purpose: these bursts run hundreds of elements at
+ * once, and hinting every grain into its own compositor layer costs far more
+ * memory than it buys. Browsers promote actively animating transforms anyway.
+ */
+
+.sand {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/*
+ * The volume. One soft ochre plume that blooms out of the crack and sinks --
+ * this is what makes the grains read as a curtain of sand rather than a
+ * scatter of dots, and it is far cheaper than the hundreds more particles it
+ * would otherwise take.
+ */
+.haze {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: min(72vw, 760px);
+  background: radial-gradient(
+    ellipse 40% 58% at 50% 44%,
+    rgba(204, 166, 102, 0.22),
+    rgba(172, 136, 78, 0.11) 46%,
+    rgba(138, 106, 58, 0) 76%
+  );
+  opacity: 0;
+  /* 3200ms, over the SPEED divisor in Sand.tsx. */
+  animation: haze 2133ms ease-out both;
+}
+
+.sandPour .haze {
+  /* The doors parting lets a heavier cloud out, and lets it linger. 4200ms
+     over the same divisor. */
+  animation-duration: 2800ms;
+  filter: brightness(1.15);
+}
+
+@keyframes haze {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -9%) scaleX(0.3);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  42% {
+    opacity: 0.7;
+  }
+
+  67% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 15%) scaleX(1.3);
+  }
+}
+
+/*
+ * The cloud itself. Each puff is a big, soft, off-centre lobe that expands,
+ * rolls and drifts on its own clock; overlapped and staggered, they billow.
+ *
+ * The lobe is deliberately not a centred circle -- a radially symmetric
+ * gradient looks identical at every angle, so rotating it would do nothing and
+ * the cloud would just swell instead of churning.
+ */
+.puff {
+  position: absolute;
+  left: 50%;
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  background: radial-gradient(
+    ellipse var(--rx) var(--ry) at var(--cx) var(--cy),
+    rgba(216, 180, 116, var(--density)),
+    rgba(184, 148, 92, calc(var(--density) * 0.55)) 44%,
+    rgba(150, 118, 68, 0) 73%
+  );
+  opacity: 0;
+  animation: puff var(--dur) var(--delay) cubic-bezier(0.14, 0.6, 0.32, 1) both;
+}
+
+@keyframes puff {
+  0% {
+    transform: translate(-50%, -50%) scale(0.35) rotate(0deg);
+    opacity: 0;
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  42% {
+    opacity: 0.78;
+  }
+
+  67% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      scale(var(--grow)) rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
+.grain {
+  position: absolute;
+  left: 50%;
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  border-radius: 50%;
+  /* A tight stop keeps the grain crisp; the soft edge is only anti-aliasing. */
+  background: radial-gradient(circle, var(--tone) 0 58%, transparent 70%);
+  opacity: 0;
+  animation: grain var(--dur) var(--delay) linear both;
+}
+
+.sandPour .grain {
+  animation-name: grainPour;
+}
+
+/*
+ * Thrown, then drifting down -- not a puff and not a plummet. Out fast to the
+ * top of the arc, a gentle tip over, then a near-linear descent: fine sand
+ * reaches terminal velocity almost at once, so accelerating it all the way
+ * looks like gravel, not sand.
+ *
+ * Opacity holds at full, then clears by 67% -- the cloud thins out and is gone
+ * while the grain is still falling, rather than riding all the way down. The
+ * last third of every animation is deliberately spent at zero opacity: that is
+ * what lets the dust disappear sooner without touching the transforms, so the
+ * fall keeps exactly the speed it had. Compressing the durations instead would
+ * clear it just as fast but speed the fall up with it.
+ *
+ * The easing lives on the keyframes rather than the animation so that opacity,
+ * keyed separately, keeps its own linear ramp instead of being dragged down by
+ * the transform's curve.
+ */
+@keyframes grain {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.1, 0.62, 0.35, 1);
+  }
+
+  8% {
+    opacity: var(--peak);
+  }
+
+  26% {
+    transform: translate(calc(-50% + var(--dx) * 0.6), calc(-50% + var(--rise)))
+      rotate(calc(var(--spin) * 0.26));
+    animation-timing-function: cubic-bezier(0.45, 0, 0.75, 0.6);
+  }
+
+  42% {
+    opacity: var(--peak);
+  }
+
+  58% {
+    transform: translate(
+        calc(-50% + var(--dx) * 0.84 + var(--sway)),
+        calc(-50% + var(--fall) * 0.38)
+      )
+      rotate(calc(var(--spin) * 0.62));
+    animation-timing-function: linear;
+  }
+
+  67% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--fall)))
+      rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
+/* The parting barely throws at all: it just lets the sand down. */
+@keyframes grainPour {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.25, 0.5, 0.5, 1);
+  }
+
+  10% {
+    opacity: var(--peak);
+  }
+
+  22% {
+    transform: translate(calc(-50% + var(--dx) * 0.5), calc(-50% + var(--rise)))
+      rotate(calc(var(--spin) * 0.2));
+    animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.62);
+  }
+
+  45% {
+    opacity: var(--peak);
+  }
+
+  55% {
+    transform: translate(
+        calc(-50% + var(--dx) * 0.8 + var(--sway)),
+        calc(-50% + var(--fall) * 0.34)
+      )
+      rotate(calc(var(--spin) * 0.58));
+    animation-timing-function: linear;
+  }
+
+  67% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--fall)))
+      rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .panel {
     transition-duration: 1ms;

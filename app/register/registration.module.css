@@ -28,11 +28,15 @@
   container-type: inline-size;
   overflow: hidden;
   font-family: var(--font-display), "Times New Roman", Times, serif;
+  filter: var(--plate-grade);
 }
 
 /* ---------------------------------------------------------------- themes */
 
 .individual {
+  /* Bright plate (mean luma 0.66): pulled down before the stretch, so the gold
+     frame's highlights survive it. Clips 0.01% of pixels, effectively nothing. */
+  --plate-grade: brightness(0.92) contrast(1.16) saturate(1.12);
   --title: #c9a173;
   --label: #c18f57;
   --field-bg: #ffffff;
@@ -50,6 +54,9 @@
 }
 
 .team {
+  /* Very dark plate (mean luma 0.17): lifted first, then stretched gently --
+     contrast alone crushed a quarter of it to black. Clips 3.6%. */
+  --plate-grade: brightness(1.18) contrast(1.06) saturate(1.16);
   --title: #646566;
   --label: #ffffff;
   --field-bg: #373737;

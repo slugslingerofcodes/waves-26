@@ -37,81 +37,11 @@
   object-fit: fill;
 }
 
-/* ---------- Loading ---------- */
-
-.loading {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  overflow: hidden;
-  background: #030100;
-  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
-}
-
-.loadingHidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-/* The text and bar show at once; the painted background fades in when it has arrived. */
-.loadingBg {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-
-.loadingBgReady {
-  opacity: 1;
-}
-
-.loadingText {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 880px;
-  margin: 0;
-  text-align: center;
-  font-size: 48px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #d3a555;
-}
-
-.dots {
-  animation: pulse 1.4s ease-in-out infinite;
-}
-
-.loadingTrack {
-  position: absolute;
-  left: 456px;
-  top: 967px;
-  width: 816px;
-  height: 12px;
-  box-sizing: border-box;
-  border: 3px solid #d3a555;
-  border-radius: 8px;
-}
-
-.loadingFill {
-  position: absolute;
-  left: -3px;
-  top: -3px;
-  bottom: -3px;
-  border-radius: 8px;
-  background: #d3a555;
-  transition: width 0.4s ease-out;
-}
-
 /* ---------- Landing ---------- */
 
 .landing {
   position: absolute;
   inset: 0;
-  /* Waits for the loading screen to fade out, so the two logos never overlap. */
-  transition: opacity 0.6s ease 0.45s;
-}
-
-.landing[data-phase="loading"] {
-  opacity: 0;
 }
 
 .foreground img {
@@ -316,6 +246,32 @@
   width: 84px;
   height: 102px;
   background: url("/assets/hourglass-golden.webp") 0 0 / 100% 100% no-repeat;
+  animation: hourglassTurn 4s ease-in-out infinite;
+}
+
+/*
+ * One turn every two seconds: the glass drains for a beat, then flips.
+ *
+ * The cycle is 4s and carries two half-turns rather than 2s carrying one. A 2s
+ * cycle would end on 180deg and snap back to 0 for the next iteration, which
+ * reads as a stutter; going the whole way round lands back on the upright it
+ * started from, so the loop is seamless. Each turn still completes on a 2s
+ * boundary -- at 50% (t=2s) and at 100% (t=4s).
+ */
+@keyframes hourglassTurn {
+  0%,
+  37.5% {
+    transform: rotate(0deg);
+  }
+
+  50%,
+  87.5% {
+    transform: rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .landing[data-theme="ashes"] .hourglass {
@@ -370,11 +326,6 @@
   50% { filter: drop-shadow(0 0 14px rgb(249 230 193 / 0.55)); opacity: 1; }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
 /* ---------- Small screens ---------- */
 
 @media (max-width: 767px) {
@@ -385,12 +336,7 @@
   }
 
   .nav {
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px 18px;
+    display: none;
   }
 
   .navLink {
@@ -409,14 +355,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .layer,
-  .landing,
   .ui {
     transition: none;
   }
 
   .lanternSwing,
   .register,
-  .dots {
+  .hourglass {
     animation: none;
   }
 }

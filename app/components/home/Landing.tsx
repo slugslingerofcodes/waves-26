@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import DoorLink from "../../_doors/DoorLink";
-import { ASSETS, LAYERS, NAV_LINKS, type Box } from "./design";
+import { NAV_LINKS } from "@/components/nav-links";
+import { ASSETS, LAYERS, type Box } from "./design";
 import Countdown from "./Countdown";
 import type { Phase } from "./HomeExperience";
 import styles from "./home.module.css";
@@ -48,7 +48,7 @@ function Layer({
   const { final, intro } = LAYERS[name];
   return (
     <div className={`${styles.layer} ${className}`} style={layerStyle(final, intro, atIntro, finalTransform)}>
-      <Image src={src} alt={alt} fill unoptimized />
+      <Image src={src} alt={alt} fill unoptimized preload />
     </div>
   );
 }
@@ -58,19 +58,6 @@ export default function Landing({ phase }: { phase: Phase }) {
   const atIntro = phase !== "landing";
   const nextTheme: Theme = theme === "golden" ? "ashes" : "golden";
   const rootRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLElement>(null);
-
-  // Publish where the nav ends so the logo can clear it when the links wrap.
-  useEffect(() => {
-    const root = rootRef.current!;
-    const nav = navRef.current!;
-    const update = () =>
-      root.style.setProperty("--nav-bottom", `${nav.getBoundingClientRect().bottom}px`);
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(nav);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <div ref={rootRef} className={styles.landing} data-theme={theme} data-phase={phase}>
@@ -94,18 +81,19 @@ export default function Landing({ phase }: { phase: Phase }) {
       </div>
 
       <div className={styles.ui} aria-hidden={atIntro}>
-        <nav ref={navRef} className={styles.nav} aria-label="Main">
-          {NAV_LINKS.map((link) =>
-            link.href ? (
-              <Link key={link.label} href={link.href} className={styles.navLink}>
-                {link.label}
-              </Link>
+        <nav className={styles.nav}>
+          {NAV_LINKS.map(({ label, href }) =>
+            href ? (
+              <DoorLink key={label} href={href} className={styles.navLink}>
+                {label}
+              </DoorLink>
             ) : (
-              <button key={link.label} type="button" className={styles.navLink}>
-                {link.label}
-              </button>
-            ),
+              <span key={label} className={styles.navLink} aria-disabled="true">
+                {label}
+              </span>
+            )
           )}
+
         </nav>
 
         <button

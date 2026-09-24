@@ -27,7 +27,7 @@ export const LAYERS = {
     intro: { x: 1720, y: 778, w: 655, h: 359 },
   },
   logo: {
-    final: { x: 161, y: 0, w: 845, h: 471 },
+    final: { x: 161, y: 60, w: 845, h: 471 },
     intro: { x: 68, y: -98, w: 1578, h: 880 },
   },
   ashes: {
@@ -37,7 +37,6 @@ export const LAYERS = {
 } satisfies Record<string, { final: Box; intro: Box }>;
 
 export const ASSETS = {
-  loadingBg: "/assets/loading-bg.webp",
   backdrop: "/assets/backdrop.webp",
   scene: "/assets/scene.webp",
   foreground: "/assets/foreground.webp",
@@ -49,13 +48,3 @@ export const ASSETS = {
   hourglassGolden: "/assets/hourglass-golden.webp",
   hourglassAshes: "/assets/hourglass-ashes.webp",
 };
-
-// Only pages that exist get an href; the rest render as inert buttons until their pages are built.
-export const NAV_LINKS: { label: string; href?: string }[] = [
-  { label: "Home", href: "/" },
-  { label: "Events", href: "/events" },
-  { label: "Gallery" },
-  { label: "About" },
-  { label: "Sponsors" },
-  { label: "Contact" },
-];
