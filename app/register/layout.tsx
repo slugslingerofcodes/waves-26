@@ -18,8 +18,13 @@ export const metadata: Metadata = {
   description: "Register for WAVES '26 — Ashes to Ascension.",
 };
 
+import Navbar from "@/components/Navbar";
+
 export default function RegisterLayout({ children }: LayoutProps<"/register">) {
   return (
-    <div className={`${playfair.variable} ${s.shell}`}>{children}</div>
+    <div className={`${playfair.variable} ${s.shell}`}>
+      <Navbar />
+      {children}
+    </div>
   );
 }

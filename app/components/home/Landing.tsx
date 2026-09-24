@@ -81,6 +81,20 @@ export default function Landing({ phase }: { phase: Phase }) {
       </div>
 
       <div className={styles.ui} aria-hidden={atIntro}>
+        <nav className={styles.nav}>
+          {NAV_LINKS.map(({ label, href }) =>
+            href ? (
+              <Link key={label} href={href} className={styles.navLink}>
+                {label}
+              </Link>
+            ) : (
+              <span key={label} className={styles.navLink} aria-disabled="true">
+                {label}
+              </span>
+            )
+          )}
+
+        </nav>
 
         <button
           type="button"

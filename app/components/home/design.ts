@@ -55,7 +55,7 @@ export const NAV_LINKS: { label: string; href?: string }[] = [
   { label: "Home", href: "/" },
   { label: "Events", href: "/events" },
   { label: "Gallery" },
-  { label: "About" },
+  { label: "About", href: "/about" },
   { label: "Sponsors" },
   { label: "Contact" },
 ];
