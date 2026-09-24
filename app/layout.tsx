@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import DoorTransition from "./_doors/DoorTransition";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+
 
 const yasharth = localFont({
   src: "../public/font/Yasharth.ttf",
@@ -33,11 +33,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        {/* Inside the doors so the navbar's links can drive the transition too. */}
-        <DoorTransition>
-          <Navbar />
-          {children}
-        </DoorTransition>
+
+        <DoorTransition>{children}</DoorTransition>
       </body>
     </html>
   );
