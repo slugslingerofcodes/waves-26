@@ -20,6 +20,16 @@
   overflow: hidden;
   background: #141013;
   isolation: isolate;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.page::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 .bg {
@@ -91,9 +101,11 @@
     transform: translateY(calc((var(--fh) + 33 - var(--cy)) * var(--u)));
     opacity: 0;
   }
+
   35% {
     opacity: 1;
   }
+
   to {
     transform: none;
     opacity: 1;
@@ -154,11 +166,8 @@
 /* the chosen card moves to (--tcx, --tcy) and grows to 370 x 595 */
 .stage[data-open] .card[data-selected] {
   z-index: 3;
-  transform: translate(
-      calc((var(--tcx) - 138 - var(--cx)) * var(--u)),
-      calc((var(--tcy) - 221.5 - var(--cy)) * var(--u))
-    )
-    scale(var(--ts));
+  transform: translate(calc((var(--tcx) - 138 - var(--cx)) * var(--u)),
+      calc((var(--tcy) - 221.5 - var(--cy)) * var(--u))) scale(var(--ts));
   transition-delay: 90ms;
 }
 
@@ -183,8 +192,7 @@
   height: calc(561 * var(--u));
   z-index: 1;
   opacity: 0;
-  transform: translate(calc(var(--fx) * var(--u)), calc(var(--fy) * var(--u)))
-    scale(calc(var(--ds) * 0.8));
+  transform: translate(calc(var(--fx) * var(--u)), calc(var(--fy) * var(--u))) scale(calc(var(--ds) * 0.8));
   pointer-events: none;
   transition:
     transform 380ms var(--ease-in-out),
@@ -287,24 +295,44 @@
   z-index: 4;
   translate: -50% 0;
   padding: 0.4em 1em;
-  border: 1px solid #c9a15e;
-  border-radius: 999px;
-  background: #1d1512;
-  color: #e3c07f;
-  font-size: max(calc(22 * var(--u)), 14px);
+  border: none;
+  background: transparent;
+  color: #f3e8d0;
+  font-size: max(calc(20 * var(--u)), 14px);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
+  transition: all 220ms ease;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
+.stage[data-open] .close {
+  opacity: 0.9;
+  pointer-events: auto;
+}
+
+.close:hover,
 .close:focus-visible {
   opacity: 1;
   pointer-events: auto;
-  outline: 2px solid #e3c07f;
-  outline-offset: 3px;
+  color: #e3c07f;
+  text-shadow: 0 0 12px rgba(227, 192, 127, 0.85);
+  outline: none;
 }
 
-/* ---------- reduced motion: keep the state changes, drop the travel ---------- */
+/* ---------- desktop vs mobile stage toggles ---------- */
+
+.desktopStage {
+  display: block;
+}
+
+.mobileStage {
+  display: none !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .rise {
@@ -336,58 +364,34 @@
   }
 }
 
-/* ---------- phones and portrait tablets ----------
- * A 660-wide frame: cards in a staggered 2x2 grid that fills the screen.
- * An opened event stacks vertically (card, then details, then description) and the page scrolls.
- * svh keeps --u stable while the mobile address bar shows and hides.
- */
+/* ---------- phones and portrait tablets (Dual Carousel) ---------- */
 
-@media (max-width: 767px), (orientation: portrait) and (max-width: 1100px) {
+@media (max-width: 767px),
+(orientation: portrait) and (max-width: 1100px) {
   .page {
-    --u: min(calc(100vw / 660), calc(100svh / 1250));
-    --fh: 1250;
-    --tcx: 330;
-    --tcy: 447.5;
+    overflow: hidden !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
   }
 
-  .frame {
-    position: relative;
-    left: auto;
-    top: auto;
-    translate: none;
-    width: calc(660 * var(--u));
-    height: calc(var(--fh) * var(--u));
-    margin: max(0px, calc((100svh - 1250 * var(--u)) / 2)) auto 0;
+  .desktopStage {
+    display: none !important;
   }
 
-  .stage[data-open] {
-    --fh: 2574;
-  }
-
-  .card {
-    --cx: var(--mx);
-    --cy: var(--my);
-  }
-
-  .detail {
-    --dx: 157;
-    --ds: 1.5;
-    transform-origin: 50% 0;
-  }
-
-  .detailLeft {
-    --dy: 790;
-    --fx: 0;
-    --fy: -420;
-  }
-
-  .detailRight {
-    --dy: 1672;
-    --fx: 0;
-    --fy: -1250;
-  }
-
-  .close {
-    top: calc(2480 * var(--u));
+  .mobileStage {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 70px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    z-index: 20;
   }
 }

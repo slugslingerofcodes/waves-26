@@ -48,7 +48,7 @@ function Layer({
   const { final, intro } = LAYERS[name];
   return (
     <div className={`${styles.layer} ${className}`} style={layerStyle(final, intro, atIntro, finalTransform)}>
-      <Image src={src} alt={alt} fill unoptimized preload />
+      <Image src={src} alt={alt} fill unoptimized preload suppressHydrationWarning />
     </div>
   );
 }
