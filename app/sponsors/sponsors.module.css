@@ -1,0 +1,252 @@
+/*
+ * Laid out on the Figma frame (1728 x 1117), same idiom as the Events page:
+ * --u is one Figma pixel on screen, so every measurement below is written as
+ * (figma px) * var(--u). The numbers are measured off the exported frame.
+ */
+
+.page {
+  --u: min(calc(100vw / 1728), calc(100dvh / 1117));
+  /* pedestal art, and the distance between two pedestals in a row */
+  --pw: 276;
+  --ph: 185;
+  --pitch: 650;
+
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #f0e0b8;
+  isolation: isolate;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/sponsors/bg-clouds.webp") center / cover no-repeat;
+}
+
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(1728 * var(--u));
+  height: calc(1117 * var(--u));
+  translate: -50% -50%;
+}
+
+/* ---------- the clouds that draw back on arrival ---------- */
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 30; /* over the page, under the navbar, as the frame shows it */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bank {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* the two overlap across the middle, so nothing shows between them */
+  width: 58.5%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition:
+    transform 1800ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 1800ms ease-in;
+  will-change: transform;
+}
+
+.bankLeft {
+  left: 0;
+  /* anchor the wispy inner edge, so a narrow viewport crops the outer side */
+  background-image: url("/sponsors/cloud-left.webp");
+  background-position: right center;
+}
+
+.bankRight {
+  right: 0;
+  background-image: url("/sponsors/cloud-right.webp");
+  background-position: left center;
+}
+
+.veilParting .bankLeft {
+  transform: translate3d(-104%, -3%, 0);
+  opacity: 0;
+}
+
+.veilParting .bankRight {
+  transform: translate3d(104%, -3%, 0);
+  opacity: 0;
+}
+
+/* ---------- heading ---------- */
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(267 * var(--u));
+  margin: 0;
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(94 * var(--u));
+  line-height: calc(112 * var(--u));
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  color: #100c09;
+}
+
+.title span {
+  display: block;
+}
+
+/* ---------- pedestal rows ---------- */
+
+.rows {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(602 * var(--u));
+  display: flex;
+  flex-direction: column;
+  /* row tops measured at 602 and 812 */
+  gap: calc(25 * var(--u));
+  cursor: grab;
+  /* horizontal drags belong to the rows, vertical ones to the page */
+  touch-action: pan-y;
+  /* a drag should move the rows, not select the sponsor names */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rows:active {
+  cursor: grabbing;
+}
+
+.rows:focus-visible {
+  outline: 2px solid #5c2e0e;
+  outline-offset: calc(8 * var(--u));
+  border-radius: calc(12 * var(--u));
+}
+
+.row {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.slot {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  width: calc(var(--pitch) * var(--u));
+}
+
+.pedestal {
+  position: relative;
+  width: calc(var(--pw) * var(--u));
+  height: calc(var(--ph) * var(--u));
+  background: url("/sponsors/pedestal.png") center / contain no-repeat;
+  /* they hang in cloud: a slow, shallow float keeps them from looking stuck */
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: calc(var(--phase) * -0.8s);
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(calc(-5 * var(--u)));
+  }
+  50% {
+    transform: translateY(calc(5 * var(--u)));
+  }
+}
+
+/* the lit disc on top of the dais, where a logo sits */
+.face {
+  position: absolute;
+  left: 24%;
+  top: 15%;
+  width: 52%;
+  height: 26%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  object-fit: contain;
+  /* the browser's own image drag would interrupt the row drag */
+  pointer-events: none;
+}
+
+.name {
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(19 * var(--u));
+  line-height: 1.1;
+  text-align: center;
+  color: #4a3417;
+}
+
+/* ---------- narrow screens ---------- */
+
+/*
+ * Portrait viewports are far taller than the frame's 1728:1117, so scaling the
+ * whole frame to fit their width would leave it stranded in a band across the
+ * middle. Below this width the page stops being a frame and simply stacks.
+ */
+@media (max-width: 1023px) {
+  .page {
+    /* scale to the screen's width instead of the desktop frame, and sit the
+       pedestals closer together so more than one is on screen at a time */
+    --u: calc(100vw / 1000);
+    --pitch: 420;
+    display: flex;
+    align-items: center;
+  }
+
+  .frame {
+    position: static;
+    width: 100%;
+    height: auto;
+    translate: none;
+    padding: calc(120 * var(--u)) 0 calc(80 * var(--u));
+  }
+
+  .title {
+    position: static;
+    font-size: calc(76 * var(--u));
+    line-height: calc(88 * var(--u));
+    margin-bottom: calc(110 * var(--u));
+  }
+
+  .rows {
+    position: static;
+  }
+}
+
+/* ---------- phones ---------- */
+
+@media (max-width: 640px) {
+  .page {
+    --u: calc(100vw / 760);
+    --pitch: 340;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pedestal {
+    animation: none;
+  }
+
+  .bank {
+    transition: none;
+  }
+}
