@@ -97,10 +97,6 @@
   text-transform: uppercase;
   letter-spacing: 0.005em;
   color: #100c09;
-  /* pointing at it lights the whole trail, so it answers the pointer */
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 .title span {
@@ -216,37 +212,40 @@
 /*
  * The halo is light in the cloud *around* the dais rather than an edge drawn on
  * its artwork, so it sits behind the pedestal as its own ellipse and fades in.
+ *
+ * It is kept faint and wide, and warm rather than white: a bright white disc
+ * over a golden cloudscape reads as a sticker rather than as light. The stops
+ * fall away gradually so the ellipse never shows an edge of its own.
  */
 .pedestal::before {
   content: "";
   position: absolute;
-  inset: -26%;
+  inset: -34%;
   z-index: -1;
   border-radius: 50%;
   background: radial-gradient(
     closest-side,
-    rgba(255, 255, 255, 0.92),
-    rgba(255, 252, 242, 0.52) 40%,
-    rgba(255, 248, 226, 0.2) 64%,
-    rgba(255, 246, 220, 0) 82%
+    rgba(255, 250, 236, 0.34),
+    rgba(255, 248, 230, 0.22) 34%,
+    rgba(255, 245, 222, 0.1) 56%,
+    rgba(255, 243, 216, 0.03) 74%,
+    rgba(255, 243, 216, 0) 88%
   );
   opacity: 0;
-  transition: opacity 320ms ease;
+  transition: opacity 420ms ease;
   pointer-events: none;
 }
 
 .slot:hover .pedestal,
 .slot[data-active] .pedestal,
-.slot:focus-visible .pedestal,
-.frame[data-lit] .pedestal {
+.slot:focus-visible .pedestal {
   transform: scale(1.09);
-  filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(255, 244, 222, 0.8)) brightness(1.06);
+  filter: drop-shadow(0 0 calc(9 * var(--u)) rgba(255, 244, 222, 0.38)) brightness(1.03);
 }
 
 .slot:hover .pedestal::before,
 .slot[data-active] .pedestal::before,
-.slot:focus-visible .pedestal::before,
-.frame[data-lit] .pedestal::before {
+.slot:focus-visible .pedestal::before {
   opacity: 1;
 }
 
@@ -276,10 +275,6 @@
 /* picking one sponsor out quiets the line behind the rest */
 .rows[data-selected] .row::before {
   opacity: 0.15;
-}
-
-.frame[data-lit] .row::before {
-  opacity: 0.8;
 }
 
 /* the lit disc on top of the dais, where a logo sits */
@@ -376,8 +371,7 @@
 
   .slot:hover .pedestal,
   .slot[data-active] .pedestal,
-  .slot:focus-visible .pedestal,
-  .frame[data-lit] .pedestal {
+  .slot:focus-visible .pedestal {
     transform: none;
   }
 }
