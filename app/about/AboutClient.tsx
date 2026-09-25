@@ -6,29 +6,83 @@ import Navbar from "@/components/Navbar";
 import Atmosphere from "../register/Atmosphere";
 import styles from "./about.module.css";
 
-const THRESHOLD = 1200; // total wheel-delta pixels needed to complete the transition
-
 export default function AboutClient() {
   const [progress, setProgress] = useState(0); // 0 = text fully visible, 1 = video fully visible
-  const accumulated = useRef(0);
-  const ticking = useRef(false);
+  const progressRef = useRef(0);
+  const targetRef = useRef(0); // 1 = Aftermovie, 0 = About Us text
+  const isAnimatingRef = useRef(false);
+  const lastTimeRef = useRef(0);
+  const boostRef = useRef(0);
   const pageRef = useRef<HTMLElement>(null);
 
-  // ── Wheel (desktop) ──
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    accumulated.current += e.deltaY;
-    // Hard clamp
-    accumulated.current = Math.max(0, Math.min(accumulated.current, THRESHOLD));
+  const startAnimation = useCallback(() => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    lastTimeRef.current = performance.now();
 
-    if (!ticking.current) {
-      ticking.current = true;
-      requestAnimationFrame(() => {
-        setProgress(accumulated.current / THRESHOLD);
-        ticking.current = false;
-      });
-    }
+    const loop = (now: number) => {
+      // Delta time in seconds, capped to prevent jumping
+      const dt = Math.min((now - lastTimeRef.current) / 1000, 0.08);
+      lastTimeRef.current = now;
+
+      const target = targetRef.current;
+      const current = progressRef.current;
+      const boost = boostRef.current;
+      boostRef.current = 0;
+
+      // Base auto-scroll rate: finishes in ~1.5s on its own (~0.68/sec)
+      const baseSpeed = 0.68;
+
+      if (target === 1) {
+        // Auto-completing forward to Aftermovie
+        const step = baseSpeed * dt + boost;
+        const next = Math.min(1, current + step);
+        progressRef.current = next;
+        setProgress(next);
+
+        if (next < 1) {
+          requestAnimationFrame(loop);
+        } else {
+          isAnimatingRef.current = false;
+        }
+      } else {
+        // Auto-completing backward to About Us text
+        const step = baseSpeed * dt + boost;
+        const next = Math.max(0, current - step);
+        progressRef.current = next;
+        setProgress(next);
+
+        if (next > 0) {
+          requestAnimationFrame(loop);
+        } else {
+          isAnimatingRef.current = false;
+        }
+      }
+    };
+
+    requestAnimationFrame(loop);
   }, []);
+
+  // ── Wheel (desktop) ──
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      if (e.deltaY > 0) {
+        // Scrolling down even a little bit triggers auto-complete to aftermovie; manual scroll accelerates it
+        targetRef.current = 1;
+        const boost = Math.min(Math.abs(e.deltaY) / 700, 0.22);
+        boostRef.current += boost;
+        startAnimation();
+      } else if (e.deltaY < -20 && progressRef.current >= 0.75) {
+        // Scrolling up while at aftermovie auto-completes back to text
+        targetRef.current = 0;
+        const boost = Math.min(Math.abs(e.deltaY) / 700, 0.22);
+        boostRef.current += boost;
+        startAnimation();
+      }
+    },
+    [startAnimation]
+  );
 
   // ── Touch (mobile) ──
   const touchStartY = useRef(0);
@@ -37,23 +91,29 @@ export default function AboutClient() {
     touchStartY.current = e.touches[0].clientY;
   }, []);
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    e.preventDefault();
-    const currentY = e.touches[0].clientY;
-    const delta = touchStartY.current - currentY; // positive = swiping up
-    touchStartY.current = currentY;
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      e.preventDefault();
+      const currentY = e.touches[0].clientY;
+      const delta = touchStartY.current - currentY; // positive = swiping up (scrolling down)
+      touchStartY.current = currentY;
 
-    accumulated.current += delta * 2; // multiply for sensitivity
-    accumulated.current = Math.max(0, Math.min(accumulated.current, THRESHOLD));
-
-    if (!ticking.current) {
-      ticking.current = true;
-      requestAnimationFrame(() => {
-        setProgress(accumulated.current / THRESHOLD);
-        ticking.current = false;
-      });
-    }
-  }, []);
+      if (delta > 0) {
+        // Swiping up (scrolling down): auto-complete to aftermovie + manual acceleration
+        targetRef.current = 1;
+        const boost = Math.min(delta / 350, 0.18);
+        boostRef.current += boost;
+        startAnimation();
+      } else if (delta < -15 && progressRef.current >= 0.75) {
+        // Swiping down from aftermovie: auto-complete back to text
+        targetRef.current = 0;
+        const boost = Math.min(Math.abs(delta) / 350, 0.18);
+        boostRef.current += boost;
+        startAnimation();
+      }
+    },
+    [startAnimation]
+  );
 
   useEffect(() => {
     const el = pageRef.current;
@@ -84,17 +144,10 @@ export default function AboutClient() {
   // Scroll button: gone almost immediately
   const scrollBtnOpacity = progress <= 0.03 ? 1 : 0;
 
-  const handleScrollDown = () => {
-    // Animate to full progress
-    const animate = () => {
-      accumulated.current = Math.min(accumulated.current + 8, THRESHOLD);
-      setProgress(accumulated.current / THRESHOLD);
-      if (accumulated.current < THRESHOLD) {
-        requestAnimationFrame(animate);
-      }
-    };
-    requestAnimationFrame(animate);
-  };
+  const handleScrollDown = useCallback(() => {
+    targetRef.current = 1;
+    startAnimation();
+  }, [startAnimation]);
 
   return (
     <main className={styles.page} ref={pageRef}>
