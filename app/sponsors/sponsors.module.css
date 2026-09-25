@@ -131,7 +131,12 @@
 
 .row {
   position: relative;
-  overflow: hidden;
+  /*
+   * Deliberately not clipped: the halo reaches well past the dais and a row
+   * that clipped would slice it with a hard horizontal line. The track's copies
+   * run off the sides instead, and the page already clips those.
+   */
+  overflow: visible;
 }
 
 .track {
@@ -145,6 +150,20 @@
   display: flex;
   justify-content: center;
   width: calc(var(--pitch) * var(--u));
+  /*
+   * The slot is a 650px column but the dais fills less than half of it, so
+   * answering to the whole column meant the trail stopping while the pointer
+   * was over empty sky. Only .hit below takes the pointer.
+   */
+  pointer-events: none;
+}
+
+/* the dais is a disc: an ellipse keeps the corners of its box out of the target */
+.hit {
+  position: absolute;
+  inset: 0;
+  clip-path: ellipse(46% 44% at 50% 52%);
+  pointer-events: auto;
   cursor: pointer;
 }
 
@@ -194,12 +213,41 @@
     filter 260ms ease;
 }
 
+/*
+ * The halo is light in the cloud *around* the dais rather than an edge drawn on
+ * its artwork, so it sits behind the pedestal as its own ellipse and fades in.
+ */
+.pedestal::before {
+  content: "";
+  position: absolute;
+  inset: -26%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 252, 242, 0.52) 40%,
+    rgba(255, 248, 226, 0.2) 64%,
+    rgba(255, 246, 220, 0) 82%
+  );
+  opacity: 0;
+  transition: opacity 320ms ease;
+  pointer-events: none;
+}
+
 .slot:hover .pedestal,
 .slot[data-active] .pedestal,
 .slot:focus-visible .pedestal,
 .frame[data-lit] .pedestal {
   transform: scale(1.09);
-  filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(255, 224, 150, 0.75)) brightness(1.06);
+  filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(255, 244, 222, 0.8)) brightness(1.06);
+}
+
+.slot:hover .pedestal::before,
+.slot[data-active] .pedestal::before,
+.slot:focus-visible .pedestal::before,
+.frame[data-lit] .pedestal::before {
+  opacity: 1;
 }
 
 /* ---------- the light the pedestals travel along ---------- */
@@ -316,8 +364,9 @@
   }
 
   /* the drift doesn't run, so the rest of the trail has to be reachable */
+  /* scrolling by hand needs the row to clip again; the halo loses its edges */
   .row {
-    overflow-x: auto;
+    overflow: auto hidden;
   }
 
   /* the light still answers the pointer; it just doesn't move */

@@ -210,6 +210,8 @@ function Pedestal({
               <span className={s.name}>{sponsor.name}</span>
             )}
           </div>
+          {/* the only part of the slot that answers the pointer */}
+          <div className={s.hit} />
         </div>
       </div>
     </div>
