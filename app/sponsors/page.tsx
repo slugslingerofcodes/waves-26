@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SponsorsMarquee from "./SponsorsMarquee";
+import SponsorsStage from "./SponsorsStage";
 import SponsorsVeil from "./SponsorsVeil";
 import styles from "./sponsors.module.css";
 import Navbar from "@/components/Navbar";
@@ -13,13 +13,7 @@ export default function SponsorsPage() {
     <main className={styles.page}>
       <Navbar/>
       <div className={styles.bg} />
-      <div className={styles.frame}>
-        <h1 className={styles.title}>
-          <span>Our Sponsors &amp;</span>
-          <span>Media Partners</span>
-        </h1>
-        <SponsorsMarquee />
-      </div>
+      <SponsorsStage />
       <SponsorsVeil />
     </main>
   );
