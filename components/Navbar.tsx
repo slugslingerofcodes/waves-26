@@ -16,7 +16,7 @@ export default function Navbar() {
   // Map routes to navbar colour themes
   const navTheme = (() => {
     if (isHome) return "light"; // brown on yellow bg
-    if (pathname.startsWith("/events") || pathname.startsWith("/register") || pathname.startsWith("/contact") || pathname.startsWith("/sponsors") || pathname.startsWith("/gallery")) return "dark"; // gold on red/dark bg
+    if (pathname.startsWith("/events") || pathname.startsWith("/register") || pathname.startsWith("/contact") || pathname.startsWith("/gallery")) return "dark"; // gold on red/dark bg
     return "light"; // default brown (gallery, about, etc.)
   })();
 
@@ -94,13 +94,13 @@ export default function Navbar() {
 
         {/* Top Left: Waves Logo → links to home (hidden on home and register pages) */}
         {!hideLogo && (
-          <DoorLink href="/" className="absolute top-[-10px] left-[-10px] md:top-[-40px] md:left-[-30px] pointer-events-auto z-50">
+          <DoorLink href="/" className="absolute top-[-10px] left-[-10px] md:top-0 md:left-0 md:p-8 pointer-events-auto z-50">
             <Image
               src="/navbar/waves-logo.png"
               alt="Waves Logo"
-              width={319}
-              height={128}
-              className="w-[180px] md:w-[319px] h-auto object-contain transition-all"
+              width={400}
+              height={160}
+              className="w-[180px] md:w-[400px] h-auto object-contain transition-all"
               suppressHydrationWarning
             />
           </DoorLink>
