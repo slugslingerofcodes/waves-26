@@ -46,34 +46,29 @@ export default function SponsorsVeil() {
     };
 
     /*
-     * A hidden tab pauses the transition but keeps the timers running, so the
-     * clouds would be taken away without ever having moved. Open in a
-     * background tab and the reveal waits until the page is actually looked at.
+     * A page that isn't being painted -- a background tab -- runs its timers
+     * but not its transitions, so starting there would take the cloud away
+     * without it ever having moved, or snap it aside the moment the page came
+     * back. A frame callback is the signal that the page is actually on
+     * screen: it doesn't run until then, and it runs at once when it is.
      *
-     * It only waits so long: some embedded browsers report hidden for a page
-     * that is plainly on screen, and a page stuck behind cloud is far worse
-     * than one that misses the reveal.
+     * The timer behind it is the backstop for a browser that never gets round
+     * to painting: a page stuck behind cloud is worse than one that misses the
+     * reveal.
      */
-    if (document.hidden) {
-      const begin = () => {
-        document.removeEventListener("visibilitychange", onVisible);
-        clearTimeout(fallback);
-        start();
-      };
-      const onVisible = () => {
-        if (!document.hidden) begin();
-      };
-      const fallback = window.setTimeout(begin, WAIT_FOR_VIEW_MS);
-      document.addEventListener("visibilitychange", onVisible);
-      return () => {
-        document.removeEventListener("visibilitychange", onVisible);
-        clearTimeout(fallback);
-        timers.forEach(clearTimeout);
-      };
-    }
+    const begin = () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(backstop);
+      start();
+    };
+    const frame = requestAnimationFrame(begin);
+    const backstop = window.setTimeout(begin, WAIT_FOR_VIEW_MS);
 
-    start();
-    return () => timers.forEach(clearTimeout);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(backstop);
+      timers.forEach(clearTimeout);
+    };
   }, []);
 
   if (phase === "gone") return null;
