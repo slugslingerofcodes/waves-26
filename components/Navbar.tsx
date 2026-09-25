@@ -1,5 +1,6 @@
 "use client";
-import Link from "next/link";
+import DoorLink from "@/app/_doors/DoorLink";
+import { NAV_LINKS, type NavLink } from "@/components/nav-links";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -67,16 +68,17 @@ export default function Navbar() {
   const isRegister = pathname === "/register" || pathname.startsWith("/register/");
   const hideLogo = isHome || isRegister;
 
-  const navItems = ["Home", "Events", "Gallery", "About", "Sponsors", "Contact", "Register"];
+  // Shares its list with the home page's nav so the two cannot drift apart.
+  const navItems: NavLink[] = [...NAV_LINKS, { label: "Register", href: "/register" }];
 
   // The home page draws its own Figma navigation on desktop,
   // but we still want this shared bar to provide the mobile hamburger menu.
   // We'll just hide the desktop links below.
 
-  const isActive = (item: string) => {
-    const route = `/${item.toLowerCase().trim()}`;
-    if (item === "Home") return pathname === "/" || pathname === "/home";
-    return pathname === route || pathname.startsWith(route + "/");
+  const isActive = (item: NavLink) => {
+    if (!item.href) return false;
+    if (item.href === "/") return pathname === "/";
+    return pathname === item.href || pathname.startsWith(item.href + "/");
   };
 
   return (
@@ -92,7 +94,7 @@ export default function Navbar() {
 
         {/* Top Left: Waves Logo → links to home (hidden on home and register pages) */}
         {!hideLogo && (
-          <Link href="/" className="absolute top-[-10px] left-[-10px] md:top-[-40px] md:left-[-30px] pointer-events-auto z-50">
+          <DoorLink href="/" className="absolute top-[-10px] left-[-10px] md:top-[-40px] md:left-[-30px] pointer-events-auto z-50">
             <Image
               src="/navbar/waves-logo.png"
               alt="Waves Logo"
@@ -101,24 +103,34 @@ export default function Navbar() {
               className="w-[180px] md:w-[319px] h-auto object-contain transition-all"
               suppressHydrationWarning
             />
-          </Link>
+          </DoorLink>
         )}
 
         {/* Navigation Links - Top Right (desktop) */}
         {!isHome && (
           <div className="navbar-desktop-menu hidden md:flex flex-row items-center gap-[clamp(16px,2vw,32px)] z-50">
-            {navItems.map((item) => (
-              <Link
-                key={item}
-                href={item === "Home" ? "/" : `/${item.toLowerCase().trim()}`}
-                className={`navbar-link inline-block text-[clamp(16px,2.7vw,35px)] leading-normal transition-all duration-200 ease-out hover:scale-125 hover:drop-shadow-lg focus-visible:scale-110 focus-visible:outline-none${isActive(item) ? " navbar-link--active" : ""}`}
-                style={{
-                  fontFamily: "'Yasharth', sans-serif",
-                }}onClick={() => setMobileMenuOpen(false)}
-              >
-                {item}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const className = `navbar-link inline-block text-[clamp(16px,2.7vw,35px)] leading-normal transition-all duration-200 ease-out${
+                item.href ? " hover:scale-125 hover:drop-shadow-lg focus-visible:scale-110 focus-visible:outline-none" : ""
+              }${isActive(item) ? " navbar-link--active" : ""}`;
+              const style = { fontFamily: "'Yasharth', sans-serif" };
+              // Matches the home nav: items with no page yet render inert.
+              return item.href ? (
+                <DoorLink
+                  key={item.label}
+                  href={item.href}
+                  className={className}
+                  style={style}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </DoorLink>
+              ) : (
+                <span key={item.label} className={className} style={style}>
+                  {item.label}
+                </span>
+              );
+            })}
           </div>
         )}
 
@@ -138,17 +150,25 @@ export default function Navbar() {
         <div
           className={`navbar-mobile-menu md:hidden pointer-events-auto z-50${mobileMenuOpen ? " navbar-mobile-menu--open" : ""}`}
         >
-          {navItems.map((item) => (
-            <Link
-              key={item}
-              href={item === "Home" ? "/" : `/${item.toLowerCase().trim()}`}
-              className={`navbar-mobile-menu__link${isActive(item) ? " navbar-mobile-menu__link--active" : ""}`}
-              style={{ fontFamily: "'Yasharth', sans-serif" }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {item}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const className = `navbar-mobile-menu__link${isActive(item) ? " navbar-mobile-menu__link--active" : ""}`;
+            const style = { fontFamily: "'Yasharth', sans-serif" };
+            return item.href ? (
+              <DoorLink
+                key={item.label}
+                href={item.href}
+                className={className}
+                style={style}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.label}
+              </DoorLink>
+            ) : (
+              <span key={item.label} className={className} style={style}>
+                {item.label}
+              </span>
+            );
+          })}
         </div>
 
       </nav>
