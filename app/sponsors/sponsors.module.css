@@ -97,6 +97,10 @@
   text-transform: uppercase;
   letter-spacing: 0.005em;
   color: #100c09;
+  /* pointing at it lights the whole trail, so it answers the pointer */
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .title span {
@@ -107,32 +111,26 @@
 
 .rows {
   position: absolute;
-  left: 0;
-  right: 0;
+  /*
+   * The trail runs the full width of the screen rather than the width of the
+   * frame. The frame keeps the Figma proportions and so is letterboxed on most
+   * viewports, and a trail that stopped short of both edges would read as an
+   * element that had simply run out rather than one passing through.
+   */
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
   top: calc(602 * var(--u));
   display: flex;
   flex-direction: column;
   /* row tops measured at 602 and 812 */
   gap: calc(25 * var(--u));
-  cursor: grab;
-  /* horizontal drags belong to the rows, vertical ones to the page */
-  touch-action: pan-y;
-  /* a drag should move the rows, not select the sponsor names */
+  /* a tap on a pedestal should light it, not select the sponsor's name */
   user-select: none;
   -webkit-user-select: none;
 }
 
-.rows:active {
-  cursor: grabbing;
-}
-
-.rows:focus-visible {
-  outline: 2px solid #5c2e0e;
-  outline-offset: calc(8 * var(--u));
-  border-radius: calc(12 * var(--u));
-}
-
 .row {
+  position: relative;
   overflow: hidden;
 }
 
@@ -147,6 +145,23 @@
   display: flex;
   justify-content: center;
   width: calc(var(--pitch) * var(--u));
+  cursor: pointer;
+}
+
+.slot:focus-visible {
+  outline: 2px solid #5c2e0e;
+  outline-offset: calc(4 * var(--u));
+  border-radius: calc(12 * var(--u));
+}
+
+/*
+ * The float and the pedestal are separate elements on purpose: the bob owns
+ * `transform` on this one, and a running animation beats a hover rule for the
+ * same property, so the growing happens on the child instead.
+ */
+.float {
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: calc(var(--phase) * -0.8s);
 }
 
 .pedestal {
@@ -154,9 +169,6 @@
   width: calc(var(--pw) * var(--u));
   height: calc(var(--ph) * var(--u));
   background: url("/sponsors/pedestal.png") center / contain no-repeat;
-  /* they hang in cloud: a slow, shallow float keeps them from looking stuck */
-  animation: bob 6s ease-in-out infinite;
-  animation-delay: calc(var(--phase) * -0.8s);
 }
 
 @keyframes bob {
@@ -167,6 +179,59 @@
   50% {
     transform: translateY(calc(5 * var(--u)));
   }
+}
+
+/* ---------- pointing at a sponsor: glow and grow ---------- */
+
+/*
+ * One rule for every way of pointing at a pedestal -- mouse, tap and keyboard
+ * focus all set the same state, so they can never drift apart. `drop-shadow`
+ * follows the artwork's alpha, so the light traces the dais and not a box.
+ */
+.pedestal {
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 260ms ease;
+}
+
+.slot:hover .pedestal,
+.slot[data-active] .pedestal,
+.slot:focus-visible .pedestal,
+.frame[data-lit] .pedestal {
+  transform: scale(1.09);
+  filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(255, 224, 150, 0.75)) brightness(1.06);
+}
+
+/* ---------- the light the pedestals travel along ---------- */
+
+.row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 55%;
+  /* the floor keeps it from falling below a pixel, and vanishing, on phones */
+  height: max(1.5px, calc(2 * var(--u)));
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 236, 190, 0.5) 12%,
+    rgba(255, 236, 190, 0.5) 88%,
+    transparent
+  );
+  filter: blur(calc(1.5 * var(--u)));
+  opacity: 0.55;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+/* picking one sponsor out quiets the line behind the rest */
+.rows[data-selected] .row::before {
+  opacity: 0.15;
+}
+
+.frame[data-lit] .row::before {
+  opacity: 0.8;
 }
 
 /* the lit disc on top of the dais, where a logo sits */
@@ -242,11 +307,28 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pedestal {
+  .float {
     animation: none;
   }
 
   .bank {
     transition: none;
+  }
+
+  /* the drift doesn't run, so the rest of the trail has to be reachable */
+  .row {
+    overflow-x: auto;
+  }
+
+  /* the light still answers the pointer; it just doesn't move */
+  .pedestal {
+    transition: filter 260ms ease;
+  }
+
+  .slot:hover .pedestal,
+  .slot[data-active] .pedestal,
+  .slot:focus-visible .pedestal,
+  .frame[data-lit] .pedestal {
+    transform: none;
   }
 }
