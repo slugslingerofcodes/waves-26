@@ -62,14 +62,15 @@ export default function Navbar() {
 
         {/* Top Left: Waves Logo → links to home (hidden on home and register pages) */}
         {!hideLogo && (
-          <DoorLink href="/" className="absolute top-[-10px] left-[0px] p-2 md:top-[-10px] md:left-[-10px] md:p-6 pointer-events-auto z-50">
+          <DoorLink href="/" className="absolute top-2 left-3 md:top-3 md:left-5 pointer-events-auto z-50">
             <Image
               src="/navbar/waves-logo.png"
               alt="Waves Logo"
-              width={400}
-              height={160}
-              className="w-[140px] md:w-[280px] h-auto object-contain transition-all"
+              width={1214}
+              height={454}
+              className="w-[140px] md:w-[260px] h-auto object-contain transition-all duration-200 hover:scale-105"
               suppressHydrationWarning
+              priority
             />
           </DoorLink>
         )}
