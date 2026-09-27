@@ -103,6 +103,22 @@
   display: block;
 }
 
+/* says what the trail is showing while the logos are last year's */
+.subtitle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(492 * var(--u));
+  margin: 0;
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(34 * var(--u));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #3d2c18;
+  opacity: 0.72;
+}
+
 /* ---------- pedestal rows ---------- */
 
 .rows {
@@ -293,6 +309,12 @@
   object-fit: contain;
   /* the browser's own image drag would interrupt the row drag */
   pointer-events: none;
+  /*
+   * Some of these marks are white on transparent, which would disappear into
+   * the lit disc. A shallow shadow gives them an edge without tinting the ones
+   * that are already dark.
+   */
+  filter: drop-shadow(0 1px 1px rgba(60, 40, 16, 0.45));
 }
 
 .name {
@@ -332,7 +354,14 @@
     position: static;
     font-size: calc(76 * var(--u));
     line-height: calc(88 * var(--u));
-    margin-bottom: calc(110 * var(--u));
+    margin-bottom: calc(34 * var(--u));
+  }
+
+  /* stacks with everything else here, rather than floating over the trail */
+  .subtitle {
+    position: static;
+    font-size: calc(30 * var(--u));
+    margin-bottom: calc(86 * var(--u));
   }
 
   .rows {

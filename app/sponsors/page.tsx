@@ -18,6 +18,8 @@ export default function SponsorsPage() {
           <span>Our Sponsors &amp;</span>
           <span>Media Partners</span>
         </h1>
+        {/* the trail carries last year's sponsors until this year's are confirmed */}
+        <p className={styles.subtitle}>Past sponsors</p>
         <SponsorsMarquee />
       </div>
       <SponsorsVeil />
