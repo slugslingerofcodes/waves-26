@@ -32,48 +32,6 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
-  // Pull-down gesture to open mobile menu; push-up to close
-  useEffect(() => {
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (!e.changedTouches || e.changedTouches.length === 0) return;
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-
-      const deltaX = touchStartX - touchEndX;
-      const deltaY = touchStartY - touchEndY;
-
-      // Vertical pull detection:
-      // deltaY < -50 means finger pulled DOWN by > 50px
-      // deltaY > 50 means finger pushed UP by > 50px
-      const isVertical = Math.abs(deltaY) > Math.abs(deltaX) * 1.3;
-
-      if (isVertical) {
-        if (deltaY < -50) {
-          // Pulled down -> open mobile menu
-          setMobileMenuOpen(true);
-        } else if (deltaY > 50 && mobileMenuOpen) {
-          // Pushed up -> close mobile menu
-          setMobileMenuOpen(false);
-        }
-      }
-    };
-
-    document.addEventListener("touchstart", handleTouchStart, { passive: true });
-    document.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [mobileMenuOpen]);
 
   const isRegister = pathname === "/register" || pathname.startsWith("/register/");
   const hideLogo = isHome || isRegister;
@@ -104,13 +62,13 @@ export default function Navbar() {
 
         {/* Top Left: Waves Logo → links to home (hidden on home and register pages) */}
         {!hideLogo && (
-          <DoorLink href="/" className="absolute top-[-10px] left-[-10px] md:top-0 md:left-0 md:p-8 pointer-events-auto z-50">
+          <DoorLink href="/" className="absolute top-[-10px] left-[0px] p-2 md:top-[-10px] md:left-[-10px] md:p-6 pointer-events-auto z-50">
             <Image
               src="/navbar/waves-logo.png"
               alt="Waves Logo"
               width={400}
               height={160}
-              className="w-[180px] md:w-[400px] h-auto object-contain transition-all"
+              className="w-[140px] md:w-[280px] h-auto object-contain transition-all"
               suppressHydrationWarning
             />
           </DoorLink>
