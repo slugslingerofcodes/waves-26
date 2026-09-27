@@ -55,7 +55,7 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px 36px;
+  gap: 56px 36px;
   padding: 120px 40px 60px;
   max-width: 1100px;
   width: 100%;
@@ -90,36 +90,22 @@
   transform: translateY(-5px) scale(1.02);
 }
 
-.cardInteractive:hover .frameGold {
-  border-color: #e5be7a;
-  box-shadow:
-    inset 0 0 25px rgba(201, 161, 94, 0.3),
-    0 0 28px rgba(201, 161, 94, 0.28);
-}
-
-.cardInteractive:hover .frameAshes {
-  border-color: #bd4444;
-  box-shadow:
-    inset 0 0 25px rgba(139, 45, 45, 0.32),
-    0 0 28px rgba(139, 45, 45, 0.3);
+.cardInteractive:hover .emblemWrap {
+  filter: drop-shadow(0 0 18px rgba(201, 161, 94, 0.35));
 }
 
 .cardInteractive:hover .nameplateWrap {
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
 }
 
-.cardInteractive:focus-visible .frameGold {
+.cardInteractive:focus-visible .emblemWrap {
   outline: 2px solid #e5be7a;
   outline-offset: 4px;
-}
-
-.cardInteractive:focus-visible .frameAshes {
-  outline: 2px solid #bd4444;
-  outline-offset: 4px;
+  border-radius: 14px;
 }
 
 /* 
- * Single container wrapping the square frame and nameplate banner.
+ * Single container wrapping the square emblem and nameplate banner.
  * Ensures both pieces are horizontally centered relative to each other 
  * as one cohesive unit across all screen sizes and cards.
  */
@@ -132,112 +118,41 @@
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* -- top piece: ornate square frame --------------------------------------- */
+/* -- top piece: full baked emblem image (no CSS border/frame needed) ------ */
 
-.frame {
+/*
+ * The emblem assets (emblem-gold.webp / emblem-ashes.webp) are 1024×1024
+ * square images with the ornate frame, corner details, and interior graphic
+ * all baked in. Just render them at full width with a 1:1 aspect ratio.
+ */
+.emblemWrap {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
   z-index: 2;
+  transition: filter 0.28s ease;
 }
 
-/* gold variant border */
-.frameGold {
-  border: 2.5px solid #c9a15e;
-  box-shadow:
-    inset 0 0 20px rgba(201, 161, 94, 0.15),
-    0 0 18px rgba(201, 161, 94, 0.12);
-  background: linear-gradient(
-    145deg,
-    rgba(30, 22, 14, 0.92) 0%,
-    rgba(20, 14, 8, 0.96) 100%
-  );
-}
-
-/* ashes variant border */
-.frameAshes {
-  border: 2.5px solid #8b2d2d;
-  box-shadow:
-    inset 0 0 20px rgba(139, 45, 45, 0.18),
-    0 0 18px rgba(139, 45, 45, 0.14);
-  background: linear-gradient(
-    145deg,
-    rgba(28, 12, 12, 0.92) 0%,
-    rgba(18, 8, 8, 0.96) 100%
-  );
-}
-
-/* decorative corner accents on the frame */
-.frame::before,
-.frame::after {
-  content: "";
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  border-style: solid;
-  border-width: 0;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.frameGold::before,
-.frameGold::after {
-  border-color: #d4af6a;
-}
-
-.frameAshes::before,
-.frameAshes::after {
-  border-color: #a33a3a;
-}
-
-.frame::before {
-  top: 8px;
-  left: 8px;
-  border-top-width: 2px;
-  border-left-width: 2px;
-}
-
-.frame::after {
-  bottom: 8px;
-  right: 8px;
-  border-bottom-width: 2px;
-  border-right-width: 2px;
-}
-
-.emblem {
-  position: relative;
-  width: 65%;
-  height: 65%;
-}
-
-.emblem img {
+.emblemWrap img {
   object-fit: contain;
-}
-
-/* empty placeholder frame — no emblem, just the border */
-.frameEmpty {
-  /* intentionally blank interior */
 }
 
 /* -- bottom piece: nameplate banner (image-based) ------------------------- */
 
 /*
- * The nameplate image has an intrinsic aspect ratio of roughly 1000:363
- * (~2.75:1). We set the wrapper to match that ratio so the image is never
- * stretched or squashed. A negative top margin tucks the nameplate's
- * ornamental top-point under the square frame above.
+ * The new nameplate assets are 584×427 (ashes) and 1024×750 (gold).
+ * Both share a similar aspect ratio of ~1.37:1 on their full canvases.
+ * width:100% makes the nameplate as wide as the emblem square above it.
+ * aspect-ratio 1024/750 matches the gold asset's full canvas; ashes is
+ * near-identical (584/427 = 1.368) so object-fit:contain keeps both undistorted.
+ * Negative top margin tucks the banner's top edge under the square.
  */
 .nameplateWrap {
   position: relative;
   z-index: 1;
   width: 100%;
-  aspect-ratio: 1000 / 363;
-  margin-top: -16px;
+  aspect-ratio: 1024 / 750;
+  margin-top: -18px;
 }
 
 .nameplateWrap img {
@@ -247,38 +162,61 @@
 /* -- text overlay on the nameplate ---------------------------------------- */
 
 /*
- * Absolutely positioned inside the nameplate wrapper.
- * Horizontally and vertically centered within the visible banner interior
- * (the ornamental border adds visual padding, so we inset the text area
- * to sit within the inner region).
+ * Absolutely positioned inside the nameplate wrapper, tightly mapped to
+ * the visible banner interior plaque (top 18% to 50%, left/right 18%).
+ * Both name and role are vertically centered together inside the banner,
+ * preventing the role line from spilling below the bottom edge.
  */
 .nameplateText {
   position: absolute;
-  inset: 0;
+  top: 18%;
+  bottom: 50%;
+  left: 18%;
+  right: 18%;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 12% 16% 14% 16%;
   pointer-events: none;
+}
+
+/* Gold nameplate — white marble interior — needs dark text */
+.nameplateTextGold .name {
+  color: #2a1a08;
+}
+
+.nameplateTextGold .role {
+  color: #5a3c1e;
+}
+
+/* Ashes nameplate — black interior — keep existing light text */
+.nameplateTextAshes .name {
+  color: #f0e2c4;
+}
+
+.nameplateTextAshes .role {
+  color: #c0a88a;
 }
 
 .name {
   font-family: var(--font-yasharth), "Yasharth", serif;
-  font-size: clamp(14px, 1.3vw, 20px);
+  font-size: clamp(14px, 1.35vw, 20px);
   color: #f0e2c4;
-  line-height: 1.3;
+  line-height: 1.15;
   margin: 0;
+  white-space: nowrap;
 }
 
 .role {
   font-family: var(--font-yasharth), "Yasharth", serif;
-  font-size: clamp(11px, 0.9vw, 15px);
+  font-size: clamp(10px, 0.95vw, 14px);
   color: #a89a82;
-  line-height: 1.4;
-  margin: 4px 0 0;
+  line-height: 1.15;
+  margin: 3px 0 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .phone {
@@ -295,7 +233,7 @@
 @media (max-width: 1199px) and (min-width: 640px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 40px 32px;
+    gap: 52px 32px;
     padding: 110px 32px 48px;
     max-width: 720px;
   }
@@ -306,17 +244,17 @@
 @media (max-width: 639px) {
   .grid {
     grid-template-columns: 1fr;
-    gap: 36px;
+    gap: 44px;
     padding: 100px 24px 40px;
     max-width: 360px;
   }
 
   .name {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .role {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .phone {
