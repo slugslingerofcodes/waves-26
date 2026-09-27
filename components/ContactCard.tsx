@@ -4,9 +4,11 @@ import styles from "@/app/contact/contact.module.css";
 /**
  * ContactCard — a two-piece ornate card used on the /contact page.
  *
- * Top piece:  square frame with a decorative border (gold or ashes variant)
- *             containing an hourglass emblem when populated, empty when not.
- * Bottom piece: ornate nameplate banner IMAGE showing name and role.
+ * Top piece:  full square emblem image (emblem-gold.webp or emblem-ashes.webp).
+ *             The frame, corners, and interior graphic are all baked into the
+ *             asset — no CSS border or decoration is applied on top of it.
+ * Bottom piece: full nameplate banner image (nameplate-gold.webp or
+ *               nameplate-ashes.webp) with an optional name/role text overlay.
  *
  * The card is interactive: clicking a populated card opens the ContactModal
  * showing the full details including phone number.
@@ -20,18 +22,6 @@ type ContactCardProps = {
   onClick?: () => void;
 };
 
-/** Map (variant, populated) → nameplate asset path */
-function getNameplateSrc(variant: "gold" | "ashes", populated: boolean): string {
-  if (variant === "gold") {
-    return populated
-      ? "/assets/nameplate-gold-filled.webp"
-      : "/assets/nameplate-gold-empty.webp";
-  }
-  return populated
-    ? "/assets/nameplate-ashes-filled.webp"
-    : "/assets/nameplate-ashes-empty.webp";
-}
-
 export default function ContactCard({
   name,
   role,
@@ -42,18 +32,12 @@ export default function ContactCard({
   const isGold = variant === "gold";
 
   const emblemSrc = isGold
-    ? "/assets/hourglass-golden.webp"
-    : "/assets/hourglass-ashes.webp";
+    ? "/assets/emblem-gold.webp"
+    : "/assets/emblem-ashes.webp";
 
-  const frameClass = [
-    styles.frame,
-    isGold ? styles.frameGold : styles.frameAshes,
-    !populated ? styles.frameEmpty : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const nameplateSrc = getNameplateSrc(variant, populated);
+  const nameplateSrc = isGold
+    ? "/assets/nameplate-gold.webp"
+    : "/assets/nameplate-ashes.webp";
 
   return (
     <button
@@ -66,21 +50,18 @@ export default function ContactCard({
     >
       {/* ── single container wrapping emblem square + banner as one cohesive unit ── */}
       <div className={styles.cardContainer}>
-        {/* ── top piece: ornate square frame ── */}
-        <div className={frameClass}>
-          {populated && (
-            <div className={styles.emblem}>
-              <Image
-                src={emblemSrc}
-                alt={`${variant} emblem`}
-                fill
-                sizes="(max-width: 639px) 200px, (max-width: 1199px) 250px, 310px"
-              />
-            </div>
-          )}
+        {/* ── top piece: full emblem image (frame + graphic baked in) ── */}
+        <div className={styles.emblemWrap}>
+          <Image
+            src={emblemSrc}
+            alt={populated ? `${variant} emblem` : ""}
+            fill
+            unoptimized
+            sizes="(max-width: 639px) 280px, (max-width: 1199px) 250px, 310px"
+          />
         </div>
 
-        {/* ── bottom piece: ornate nameplate banner (image-based) ── */}
+        {/* ── bottom piece: full nameplate banner image ── */}
         <div className={styles.nameplateWrap}>
           <Image
             src={nameplateSrc}
@@ -89,9 +70,13 @@ export default function ContactCard({
             sizes="(max-width: 639px) 320px, (max-width: 1199px) 280px, 310px"
           />
 
-          {/* text overlay — displays name and role only */}
+          {/* text overlay — name and role, only for populated cards */}
           {populated && (
-            <div className={styles.nameplateText}>
+            <div
+              className={`${styles.nameplateText} ${
+                isGold ? styles.nameplateTextGold : styles.nameplateTextAshes
+              }`}
+            >
               <p className={styles.name}>{name}</p>
               {role && <p className={styles.role}>{role}</p>}
             </div>
