@@ -1,0 +1,55 @@
+{
+  "_comment": "Edit this file to change the sponsor trail. Logos live in public/sponsors/logos/; 'href' may be null.",
+  "sponsors": [
+    {
+      "name": "Aurora Labs",
+      "logo": "/sponsors/logos/aurora.svg",
+      "href": null
+    },
+    {
+      "name": "Beacon Foods",
+      "logo": "/sponsors/logos/beacon.svg",
+      "href": null
+    },
+    {
+      "name": "Cobalt Motors",
+      "logo": "/sponsors/logos/cobalt.svg",
+      "href": null
+    },
+    {
+      "name": "Drift Audio",
+      "logo": "/sponsors/logos/drift.svg",
+      "href": null
+    },
+    {
+      "name": "Ember Apparel",
+      "logo": "/sponsors/logos/ember.svg",
+      "href": null
+    },
+    {
+      "name": "Fathom Media",
+      "logo": "/sponsors/logos/fathom.svg",
+      "href": null
+    },
+    {
+      "name": "Gilded Press",
+      "logo": "/sponsors/logos/gilded.svg",
+      "href": null
+    },
+    {
+      "name": "Halcyon Radio",
+      "logo": "/sponsors/logos/halcyon.svg",
+      "href": null
+    },
+    {
+      "name": "Ivory Studios",
+      "logo": "/sponsors/logos/ivory.svg",
+      "href": null
+    },
+    {
+      "name": "Junction FM",
+      "logo": "/sponsors/logos/junction.svg",
+      "href": null
+    }
+  ]
+}

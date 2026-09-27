@@ -1,110 +1,135 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef } from "react";
-import { ROWS, type Sponsor } from "./sponsors-data";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { loadSponsors, toRows, type Sponsor } from "./sponsors-data";
 import s from "./sponsors.module.css";
 
-/** Copies of each row laid end to end, so a drag never runs out of pedestals. */
-const COPIES = 3;
-/** How quickly a flick runs down: 1 would coast forever. */
-const FRICTION = 0.94;
-const ARROW_STEP = 80;
+/** Copies of each row laid end to end, so the trail never runs out. */
+const MIN_COPIES = 3;
+/** One pedestal passes every this many seconds, at every viewport size. */
+const SECONDS_PER_PEDESTAL = 7;
+/** How long the drift takes to come to rest, and to pick back up again. */
+const EASE_MS = 350;
+/** A frame after a long gap (a backgrounded tab) must not jump the trail on. */
+const MAX_FRAME_MS = 100;
+
+type SlotKey = string;
 
 /**
- * The rows are dragged, not animated: pointer, wheel and arrow keys all move
- * the same offset, and a flick coasts to a stop. Each row wraps its offset into
- * one copy's width, so the pedestals never run out in either direction.
+ * The rows carry themselves: a clock advances one offset and each row wraps it
+ * into a single copy's width, so the pedestals never run out in either
+ * direction. Pointing at a sponsor -- or tapping, or focusing one -- eases the
+ * drift to a halt and lights that pedestal.
  */
 export default function SponsorsMarquee() {
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  const [copies, setCopies] = useState(MIN_COPIES);
+  const [hovered, setHovered] = useState<SlotKey | null>(null);
+  const [selected, setSelected] = useState<SlotKey | null>(null);
+
   const tracks = useRef<(HTMLDivElement | null)[]>([]);
   const offset = useRef(0);
-  const velocity = useRef(0);
-  const dragging = useRef(false);
-  const lastX = useRef(0);
+  const speed = useRef(1); // 0 stopped, 1 full pace; eased between the two
+  const lastFrame = useRef(0);
   const frame = useRef(0);
+  const paused = useRef(false);
+
+  const rows = useMemo(() => toRows(sponsors), [sponsors]);
+  const rowsRef = useRef<Sponsor[][]>([]);
+  const copiesRef = useRef(copies);
+
+  // the animation loop reads these without re-subscribing to every change
+  useEffect(() => {
+    rowsRef.current = rows;
+  }, [rows]);
+  useEffect(() => {
+    copiesRef.current = copies;
+  }, [copies]);
+  useEffect(() => {
+    paused.current = hovered !== null || selected !== null;
+  }, [hovered, selected]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    loadSponsors(controller.signal).then(setSponsors);
+    return () => controller.abort();
+  }, []);
 
   const paint = useCallback(() => {
     tracks.current.forEach((track, r) => {
       if (!track) return;
-      const copy = track.scrollWidth / COPIES;
+      const copy = track.scrollWidth / copiesRef.current;
       if (!copy) return;
       // the lower row sits half a pedestal further on -- the stagger of the frame
-      const shifted = offset.current - (r * copy) / (2 * ROWS[r].length);
+      const items = rowsRef.current[r]?.length || 1;
+      const shifted = offset.current - (r * copy) / (2 * items);
       const x = ((shifted % copy) - copy) % copy; // keep it inside one copy
       track.style.transform = `translate3d(${x}px, 0, 0)`;
     });
   }, []);
 
-  const glide = useCallback(() => {
-    const step = () => {
-      velocity.current *= FRICTION;
-      if (Math.abs(velocity.current) < 0.05) return;
-      offset.current += velocity.current;
+  /*
+   * Enough copies to cover the viewport twice over. Three suits ten sponsors,
+   * but a shorter list would leave a gap at the wrap, so the width is measured
+   * rather than assumed.
+   */
+  useEffect(() => {
+    const fit = () => {
+      const track = tracks.current[0];
+      if (!track) return;
+      const copy = track.scrollWidth / copiesRef.current;
+      if (!copy) return;
+      const needed = Math.max(MIN_COPIES, Math.ceil(window.innerWidth / copy) + 1);
+      if (needed !== copiesRef.current) setCopies(needed);
       paint();
-      frame.current = requestAnimationFrame(step);
     };
-    frame.current = requestAnimationFrame(step);
-  }, [paint]);
-
-  const move = useCallback(
-    (dx: number) => {
-      offset.current += dx;
-      paint();
-    },
-    [paint],
-  );
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [copies, sponsors, paint]);
 
   useEffect(() => {
-    paint();
-    const onResize = () => paint();
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      cancelAnimationFrame(frame.current);
+    if (!sponsors.length) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const step = (now: number) => {
+      const dt = Math.min(now - lastFrame.current, MAX_FRAME_MS) / 1000;
+      lastFrame.current = now;
+
+      // ease towards a stop or back up to pace, rather than switching outright
+      const target = paused.current ? 0 : 1;
+      speed.current += (target - speed.current) * Math.min(1, (dt * 1000) / EASE_MS);
+
+      const track = tracks.current[0];
+      if (track) {
+        const copy = track.scrollWidth / copiesRef.current;
+        const items = rowsRef.current[0]?.length || 1;
+        const pitch = copy / items;
+        offset.current += (pitch / SECONDS_PER_PEDESTAL) * dt * speed.current;
+        paint();
+      }
+      frame.current = requestAnimationFrame(step);
     };
-  }, [paint]);
+
+    // as the veil does: a frame callback only runs once the page is painted
+    frame.current = requestAnimationFrame((now) => {
+      lastFrame.current = now;
+      frame.current = requestAnimationFrame(step);
+    });
+    return () => cancelAnimationFrame(frame.current);
+  }, [sponsors, paint]);
 
   return (
     <div
       className={s.rows}
       role="group"
       aria-label="Sponsors and media partners"
-      tabIndex={0}
-      onPointerDown={(e) => {
-        cancelAnimationFrame(frame.current);
-        dragging.current = true;
-        velocity.current = 0;
-        lastX.current = e.clientX;
-        e.currentTarget.setPointerCapture(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (!dragging.current) return;
-        const dx = e.clientX - lastX.current;
-        lastX.current = e.clientX;
-        velocity.current = dx;
-        move(dx);
-      }}
-      onPointerUp={() => {
-        if (!dragging.current) return;
-        dragging.current = false;
-        glide();
-      }}
-      onPointerCancel={() => {
-        dragging.current = false;
-      }}
-      onWheel={(e) => {
-        const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-        move(-d);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "ArrowLeft") move(ARROW_STEP);
-        else if (e.key === "ArrowRight") move(-ARROW_STEP);
-        else return;
-        e.preventDefault();
-      }}
+      data-selected={selected ? "" : undefined}
+      // a tap on the sky between pedestals puts the trail back in motion
+      onClick={() => setSelected(null)}
     >
-      {ROWS.map((row, r) => (
+      {rows.map((row, r) => (
         <div className={s.row} key={r}>
           <div
             className={s.track}
@@ -112,16 +137,23 @@ export default function SponsorsMarquee() {
               tracks.current[r] = el;
             }}
           >
-            {Array.from({ length: COPIES }, (_, c) =>
-              row.map((sponsor, i) => (
-                <Pedestal
-                  key={`${c}-${i}`}
-                  sponsor={sponsor}
-                  phase={i}
-                  // only the first copy is read out; the rest are the same names
-                  hidden={c > 0}
-                />
-              )),
+            {Array.from({ length: copies }, (_, c) =>
+              row.map((sponsor, i) => {
+                const key = `${r}-${c}-${i}`;
+                return (
+                  <Pedestal
+                    key={key}
+                    sponsor={sponsor}
+                    phase={i}
+                    active={hovered === key || selected === key}
+                    // only the first copy is read out and reachable by keyboard;
+                    // the rest are the same sponsors over again
+                    duplicate={c > 0}
+                    onHover={(on) => setHovered(on ? key : null)}
+                    onSelect={() => setSelected((was) => (was === key ? null : key))}
+                  />
+                );
+              }),
             )}
           </div>
         </div>
@@ -133,21 +165,53 @@ export default function SponsorsMarquee() {
 function Pedestal({
   sponsor,
   phase,
-  hidden,
+  active,
+  duplicate,
+  onHover,
+  onSelect,
 }: {
   sponsor: Sponsor;
   phase: number;
-  hidden: boolean;
+  active: boolean;
+  duplicate: boolean;
+  onHover: (on: boolean) => void;
+  onSelect: () => void;
 }) {
+  const select = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // the rows clear the selection; a pedestal sets it
+    onSelect();
+  };
+
   return (
-    <div className={s.slot} aria-hidden={hidden || undefined}>
-      <div className={s.pedestal} style={{ "--phase": phase } as React.CSSProperties}>
-        <div className={s.face}>
-          {sponsor.logo ? (
-            <Image src={sponsor.logo} alt={sponsor.name} fill sizes="20vw" className={s.logo} />
-          ) : (
-            <span className={s.name}>{sponsor.name}</span>
-          )}
+    <div
+      className={s.slot}
+      data-active={active ? "" : undefined}
+      aria-hidden={duplicate || undefined}
+      tabIndex={duplicate ? undefined : 0}
+      aria-label={duplicate ? undefined : sponsor.name}
+      // a tap fires pointerenter too, and it would never be cleared
+      onPointerEnter={(e) => e.pointerType === "mouse" && onHover(true)}
+      onPointerLeave={(e) => e.pointerType === "mouse" && onHover(false)}
+      onFocus={() => onHover(true)}
+      onBlur={() => onHover(false)}
+      onClick={select}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        select(e);
+      }}
+    >
+      <div className={s.float} style={{ "--phase": phase } as CSSProperties}>
+        <div className={s.pedestal}>
+          <div className={s.face}>
+            {sponsor.logo ? (
+              <Image src={sponsor.logo} alt={sponsor.name} fill sizes="20vw" className={s.logo} />
+            ) : (
+              <span className={s.name}>{sponsor.name}</span>
+            )}
+          </div>
+          {/* the only part of the slot that answers the pointer */}
+          <div className={s.hit} />
         </div>
       </div>
     </div>
