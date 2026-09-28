@@ -52,7 +52,7 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity var(--theme-duration, 0.3s) ease;
+  transition: opacity 2s ease;
 }
 
 .landing[data-theme="ashes"] .ashesLayers {
@@ -64,7 +64,7 @@
 }
 
 .goldenLogo {
-  transition: transform 2s var(--ease), opacity var(--theme-duration, 0.3s) ease;
+  transition: transform 2s var(--ease), opacity 2s ease;
 }
 
 .landing[data-theme="ashes"] .goldenLogo {
@@ -73,7 +73,7 @@
 
 .ashesLogo {
   opacity: 0;
-  transition: transform 2s var(--ease), opacity var(--theme-duration, 0.3s) ease;
+  transition: transform 2s var(--ease), opacity 2s ease;
 }
 
 .landing[data-theme="ashes"] .ashesLogo {
@@ -116,7 +116,7 @@
   line-height: 1.15;
   color: var(--text);
   text-decoration: none;
-  transition: transform 0.3s ease, text-shadow 0.3s ease, color var(--theme-duration, 0.3s) ease;
+  transition: transform 0.3s ease, text-shadow 0.3s ease, color 2s ease;
 }
 
 .navLink:hover,
@@ -228,7 +228,7 @@
   transform: scale(var(--ui-s));
   transform-origin: bottom left;
   color: var(--count);
-  transition: color var(--theme-duration, 0.3s) ease;
+  transition: color 2s ease;
 }
 
 .unit {
@@ -310,7 +310,7 @@
   -webkit-text-stroke: 1px #fff;
   text-shadow: 5px 5px 10px #000;
   animation: glow 2.5s ease-in-out infinite;
-  transition: color var(--theme-duration, 0.3s) ease;
+  transition: color 2s ease;
 }
 
 .register:hover,

@@ -55,28 +55,25 @@ function Layer({
 
 export default function Landing({ phase }: { phase: Phase }) {
   const [theme, setTheme] = useState<Theme>(() => savedTheme);
-  const [slowTransition, setSlowTransition] = useState(false);
   const atIntro = phase !== "landing";
   const nextTheme: Theme = theme === "golden" ? "ashes" : "golden";
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (phase === "landing" && !sessionStorage.getItem("theme_auto_switched_v5")) {
-      sessionStorage.setItem("theme_auto_switched_v5", "true");
-      // Wait for the 2s logo transition to finish, then wait an extra 1s (total 3s).
-      const timer = setTimeout(() => {
-        setSlowTransition(true);
-        savedTheme = "ashes";
-        setTheme("ashes");
-        // Reset to normal transition speed after 3s
-        setTimeout(() => setSlowTransition(false), 3500);
-      }, 3000);
-      return () => clearTimeout(timer);
+    if (phase === "landing") {
+      const interval = setInterval(() => {
+        setTheme((currentTheme) => {
+          const next = currentTheme === "golden" ? "ashes" : "golden";
+          savedTheme = next;
+          return next;
+        });
+      }, 10000);
+      return () => clearInterval(interval);
     }
   }, [phase]);
 
   return (
-    <div ref={rootRef} className={styles.landing} data-theme={theme} data-phase={phase} style={{ "--theme-duration": slowTransition ? "3s" : "0.3s" } as React.CSSProperties}>
+    <div ref={rootRef} className={styles.landing} data-theme={theme} data-phase={phase}>
       <div className={`${styles.stage} ${styles.landingStage}`}>
         <Layer name="backdrop" src={ASSETS.backdrop} atIntro={atIntro} />
         <Layer name="scene" src={ASSETS.scene} atIntro={atIntro} />
