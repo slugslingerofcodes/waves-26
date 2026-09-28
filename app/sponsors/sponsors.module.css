@@ -1,0 +1,377 @@
+/*
+ * Laid out on the Figma frame (1728 x 1117), same idiom as the Events page:
+ * --u is one Figma pixel on screen, so every measurement below is written as
+ * (figma px) * var(--u). The numbers are measured off the exported frame.
+ */
+
+.page {
+  --u: min(calc(100vw / 1728), calc(100dvh / 1117));
+  /* pedestal art, and the distance between two pedestals in a row */
+  --pw: 276;
+  --ph: 185;
+  --pitch: 650;
+
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #f0e0b8;
+  isolation: isolate;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/sponsors/bg-clouds.webp") center / cover no-repeat;
+}
+
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(1728 * var(--u));
+  height: calc(1117 * var(--u));
+  translate: -50% -50%;
+}
+
+/* ---------- the clouds that draw back on arrival ---------- */
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 30; /* over the page, under the navbar, as the frame shows it */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bank {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* the two overlap across the middle, so nothing shows between them */
+  width: 58.5%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition:
+    transform 1800ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 1800ms ease-in;
+  will-change: transform;
+}
+
+.bankLeft {
+  left: 0;
+  /* anchor the wispy inner edge, so a narrow viewport crops the outer side */
+  background-image: url("/sponsors/cloud-left.webp");
+  background-position: right center;
+}
+
+.bankRight {
+  right: 0;
+  background-image: url("/sponsors/cloud-right.webp");
+  background-position: left center;
+}
+
+.veilParting .bankLeft {
+  transform: translate3d(-104%, -3%, 0);
+  opacity: 0;
+}
+
+.veilParting .bankRight {
+  transform: translate3d(104%, -3%, 0);
+  opacity: 0;
+}
+
+/* ---------- heading ---------- */
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(267 * var(--u));
+  margin: 0;
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(94 * var(--u));
+  line-height: calc(112 * var(--u));
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  color: #100c09;
+}
+
+.title span {
+  display: block;
+}
+
+/* ---------- pedestal rows ---------- */
+
+.rows {
+  position: absolute;
+  /*
+   * The trail runs the full width of the screen rather than the width of the
+   * frame. The frame keeps the Figma proportions and so is letterboxed on most
+   * viewports, and a trail that stopped short of both edges would read as an
+   * element that had simply run out rather than one passing through.
+   */
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  top: calc(602 * var(--u));
+  display: flex;
+  flex-direction: column;
+  /* row tops measured at 602 and 812 */
+  gap: calc(25 * var(--u));
+  /* a tap on a pedestal should light it, not select the sponsor's name */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.row {
+  position: relative;
+  /*
+   * Deliberately not clipped: the halo reaches well past the dais and a row
+   * that clipped would slice it with a hard horizontal line. The track's copies
+   * run off the sides instead, and the page already clips those.
+   */
+  overflow: visible;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.slot {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  width: calc(var(--pitch) * var(--u));
+  /*
+   * The slot is a 650px column but the dais fills less than half of it, so
+   * answering to the whole column meant the trail stopping while the pointer
+   * was over empty sky. Only .hit below takes the pointer.
+   */
+  pointer-events: none;
+}
+
+/* the dais is a disc: an ellipse keeps the corners of its box out of the target */
+.hit {
+  position: absolute;
+  inset: 0;
+  clip-path: ellipse(46% 44% at 50% 52%);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.slot:focus-visible {
+  outline: 2px solid #5c2e0e;
+  outline-offset: calc(4 * var(--u));
+  border-radius: calc(12 * var(--u));
+}
+
+/*
+ * The float and the pedestal are separate elements on purpose: the bob owns
+ * `transform` on this one, and a running animation beats a hover rule for the
+ * same property, so the growing happens on the child instead.
+ */
+.float {
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: calc(var(--phase) * -0.8s);
+}
+
+.pedestal {
+  position: relative;
+  width: calc(var(--pw) * var(--u));
+  height: calc(var(--ph) * var(--u));
+  background: url("/sponsors/pedestal.png") center / contain no-repeat;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(calc(-5 * var(--u)));
+  }
+  50% {
+    transform: translateY(calc(5 * var(--u)));
+  }
+}
+
+/* ---------- pointing at a sponsor: glow and grow ---------- */
+
+/*
+ * One rule for every way of pointing at a pedestal -- mouse, tap and keyboard
+ * focus all set the same state, so they can never drift apart. `drop-shadow`
+ * follows the artwork's alpha, so the light traces the dais and not a box.
+ */
+.pedestal {
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 260ms ease;
+}
+
+/*
+ * The halo is light in the cloud *around* the dais rather than an edge drawn on
+ * its artwork, so it sits behind the pedestal as its own ellipse and fades in.
+ *
+ * It is kept faint and wide, and warm rather than white: a bright white disc
+ * over a golden cloudscape reads as a sticker rather than as light. The stops
+ * fall away gradually so the ellipse never shows an edge of its own.
+ */
+.pedestal::before {
+  content: "";
+  position: absolute;
+  inset: -34%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 250, 236, 0.34),
+    rgba(255, 248, 230, 0.22) 34%,
+    rgba(255, 245, 222, 0.1) 56%,
+    rgba(255, 243, 216, 0.03) 74%,
+    rgba(255, 243, 216, 0) 88%
+  );
+  opacity: 0;
+  transition: opacity 420ms ease;
+  pointer-events: none;
+}
+
+.slot:hover .pedestal,
+.slot[data-active] .pedestal,
+.slot:focus-visible .pedestal {
+  transform: scale(1.09);
+  filter: drop-shadow(0 0 calc(9 * var(--u)) rgba(255, 244, 222, 0.38)) brightness(1.03);
+}
+
+.slot:hover .pedestal::before,
+.slot[data-active] .pedestal::before,
+.slot:focus-visible .pedestal::before {
+  opacity: 1;
+}
+
+/* ---------- the light the pedestals travel along ---------- */
+
+.row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 55%;
+  /* the floor keeps it from falling below a pixel, and vanishing, on phones */
+  height: max(1.5px, calc(2 * var(--u)));
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 236, 190, 0.5) 12%,
+    rgba(255, 236, 190, 0.5) 88%,
+    transparent
+  );
+  filter: blur(calc(1.5 * var(--u)));
+  opacity: 0.55;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+/* picking one sponsor out quiets the line behind the rest */
+.rows[data-selected] .row::before {
+  opacity: 0.15;
+}
+
+/* the lit disc on top of the dais, where a logo sits */
+.face {
+  position: absolute;
+  left: 24%;
+  top: 15%;
+  width: 52%;
+  height: 26%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  object-fit: contain;
+  /* the browser's own image drag would interrupt the row drag */
+  pointer-events: none;
+}
+
+.name {
+  font-family: var(--font-yasharth), serif;
+  font-size: calc(19 * var(--u));
+  line-height: 1.1;
+  text-align: center;
+  color: #4a3417;
+}
+
+/* ---------- narrow screens ---------- */
+
+/*
+ * Portrait viewports are far taller than the frame's 1728:1117, so scaling the
+ * whole frame to fit their width would leave it stranded in a band across the
+ * middle. Below this width the page stops being a frame and simply stacks.
+ */
+@media (max-width: 1023px) {
+  .page {
+    /* scale to the screen's width instead of the desktop frame, and sit the
+       pedestals closer together so more than one is on screen at a time */
+    --u: calc(100vw / 1000);
+    --pitch: 420;
+    display: flex;
+    align-items: center;
+  }
+
+  .frame {
+    position: static;
+    width: 100%;
+    height: auto;
+    translate: none;
+    padding: calc(120 * var(--u)) 0 calc(80 * var(--u));
+  }
+
+  .title {
+    position: static;
+    font-size: calc(76 * var(--u));
+    line-height: calc(88 * var(--u));
+    margin-bottom: calc(110 * var(--u));
+  }
+
+  .rows {
+    position: static;
+  }
+}
+
+/* ---------- phones ---------- */
+
+@media (max-width: 640px) {
+  .page {
+    --u: calc(100vw / 760);
+    --pitch: 340;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+
+  .bank {
+    transition: none;
+  }
+
+  /* the drift doesn't run, so the rest of the trail has to be reachable */
+  /* scrolling by hand needs the row to clip again; the halo loses its edges */
+  .row {
+    overflow: auto hidden;
+  }
+
+  /* the light still answers the pointer; it just doesn't move */
+  .pedestal {
+    transition: filter 260ms ease;
+  }
+
+  .slot:hover .pedestal,
+  .slot[data-active] .pedestal,
+  .slot:focus-visible .pedestal {
+    transform: none;
+  }
+}

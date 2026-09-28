@@ -18,7 +18,7 @@ export default function Navbar() {
   // Map routes to navbar colour themes
   const navTheme = (() => {
     if (isHome) return "light"; // brown on yellow bg
-    if (pathname.startsWith("/events") || pathname.startsWith("/register") || pathname.startsWith("/contact") || pathname.startsWith("/sponsors") || pathname.startsWith("/gallery")) return "dark"; // gold on red/dark bg
+    if (pathname.startsWith("/events") || pathname.startsWith("/register") || pathname.startsWith("/contact") || pathname.startsWith("/gallery")) return "dark"; // gold on red/dark bg
     return "light"; // default brown (gallery, about, etc.)
   })();
 
@@ -34,38 +34,6 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
-  // Swipe detection for mobile menu
-  useEffect(() => {
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartX = e.changedTouches[0].screenX;
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      touchEndX = e.changedTouches[0].screenX;
-      const distance = touchStartX - touchEndX;
-
-      // Swipe left (finger moves left) -> open menu
-      if (distance > 50) {
-        setMobileMenuOpen(true);
-      }
-      // Swipe right (finger moves right) -> close menu
-      else if (distance < -50) {
-        setMobileMenuOpen(false);
-      }
-    };
-
-    // Attach listeners passively for better scroll performance
-    document.addEventListener("touchstart", handleTouchStart, { passive: true });
-    document.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
 
   const isRegister = pathname === "/register" || pathname.startsWith("/register/");
   const hideLogo = isHome || isRegister;
@@ -90,23 +58,24 @@ export default function Navbar() {
     <>
       {/* Full screen beige card overlay for mobile menu — slides down from top */}
       <div
-        className={`fixed inset-0 z-40 bg-[#F3E8D0] md:hidden navbar-mobile-overlay ${mobileMenuOpen ? "navbar-mobile-overlay--open" : ""}`}
+        className={`fixed inset-0 z-[80] bg-[#F3E8D0] md:hidden navbar-mobile-overlay ${mobileMenuOpen ? "navbar-mobile-overlay--open" : ""}`}
         onClick={() => setMobileMenuOpen(false)}
         aria-hidden="true"
       />
 
-      <nav className="fixed inset-0 pointer-events-none z-50" data-theme={navTheme}>
+      <nav className="fixed inset-0 pointer-events-none z-[90]" data-theme={navTheme}>
 
         {/* Top Left: Waves Logo → links to home (hidden on home and register pages) */}
         {!hideLogo && (
-          <DoorLink href="/" className="absolute top-[-10px] left-[-10px] md:top-[-40px] md:left-[-30px] pointer-events-auto z-50">
+          <DoorLink href="/" className="absolute top-2 left-3 md:top-3 md:left-5 pointer-events-auto z-50">
             <Image
               src="/navbar/waves-logo.png"
               alt="Waves Logo"
-              width={319}
-              height={128}
-              className="w-[180px] md:w-[319px] h-auto object-contain transition-all"
+              width={1214}
+              height={454}
+              className="w-[140px] md:w-[260px] h-auto object-contain transition-all duration-200 hover:scale-105"
               suppressHydrationWarning
+              priority
             />
           </DoorLink>
         )}
@@ -155,7 +124,7 @@ export default function Navbar() {
 
         {/* Hamburger Button - Mobile only */}
         <button
-          className="navbar-hamburger md:hidden absolute top-[16px] right-[16px] pointer-events-auto z-[60]"
+          className="navbar-hamburger md:hidden absolute top-[16px] right-[16px] pointer-events-auto z-[100]"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
           aria-expanded={mobileMenuOpen}
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -167,7 +136,7 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         <div
-          className={`navbar-mobile-menu md:hidden pointer-events-auto z-50${mobileMenuOpen ? " navbar-mobile-menu--open" : ""}`}
+          className={`navbar-mobile-menu md:hidden pointer-events-auto z-[95]${mobileMenuOpen ? " navbar-mobile-menu--open" : ""}`}
         >
           {shownItems.map((item) => {
             const className = `navbar-mobile-menu__link${isActive(item) ? " navbar-mobile-menu__link--active" : ""}`;

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Junction FM">
+  <title>Junction FM</title>
+  <circle cx="80" cy="80" r="66" fill="none" stroke="#4a3417" stroke-width="5" opacity="0.75"/>
+  <circle cx="80" cy="80" r="56" fill="none" stroke="#4a3417" stroke-width="2" opacity="0.45"/>
+  <text x="80" y="80" text-anchor="middle" dominant-baseline="central"
+        font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="600"
+        letter-spacing="2" fill="#4a3417">JF</text>
+</svg>

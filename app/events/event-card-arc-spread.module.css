@@ -1,0 +1,363 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  touch-action: pan-y;
+  overflow: hidden;
+  padding: 6px 12px 14px;
+  box-sizing: border-box;
+}
+
+/* Header (NO PILL SHAPES!) */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 4px;
+  box-sizing: border-box;
+  z-index: 35;
+}
+
+/* Clean text link with golden highlight on hover - NO PILL BUTTON! */
+.backLink {
+  background: transparent;
+  border: 0;
+  color: #f3e8d0;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  position: relative;
+  text-decoration: none;
+  transition: all 220ms ease;
+  z-index: 60;
+  pointer-events: auto;
+}
+
+.backLink:hover {
+  color: #e3c07f;
+  text-shadow: 0 0 12px rgba(227, 192, 127, 0.85);
+  transform: translateX(-2px);
+}
+
+.backArrow {
+  font-size: 15px;
+  transition: transform 220ms ease;
+}
+
+.backLink:hover .backArrow {
+  transform: translateX(-3px);
+}
+
+.eventName {
+  margin: 0;
+  font-size: clamp(16px, 4.4vw, 20px);
+  color: #e3c07f;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  text-shadow: 0 0 12px rgba(227, 192, 127, 0.5);
+  text-align: right;
+}
+
+/* Tabs Navigation (NO PILL SHAPES!) */
+.tabNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 5vw, 28px);
+  width: 100%;
+  padding: 4px 0 2px;
+  z-index: 35;
+}
+
+.tabItem {
+  background: transparent;
+  border: 0;
+  color: rgba(243, 232, 208, 0.65);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 6px;
+  position: relative;
+  transition: all 220ms ease;
+}
+
+.tabItem::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: transparent;
+  transition: all 200ms ease;
+}
+
+.tabItem:hover {
+  color: #e3c07f;
+  text-shadow: 0 0 12px rgba(227, 192, 127, 0.75);
+}
+
+.tabItem:hover::after {
+  background: rgba(201, 161, 94, 0.5);
+}
+
+.tabItemActive {
+  color: #e3c07f;
+  font-weight: 600;
+  text-shadow: 0 0 14px rgba(227, 192, 127, 0.85);
+}
+
+.tabItemActive::after {
+  background: #c9a15e;
+  box-shadow: 0 0 8px rgba(201, 161, 94, 0.8);
+}
+
+/* Arc Arena: 3D perspective viewport for fanned card spread */
+.arena {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  perspective: 1000px;
+}
+
+.stage {
+  position: relative;
+  width: min(70vw, 260px);
+  height: calc(min(70vw, 260px) * 1.61);
+  max-height: calc(100svh - 230px);
+  max-width: calc((100svh - 230px) / 1.61);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardWrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  transform-origin: center bottom;
+}
+
+.cardWrapper:active {
+  cursor: grabbing;
+}
+
+.cardShell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.cardCenter {
+  cursor: grab;
+}
+
+.cardSide {
+  cursor: pointer;
+}
+
+.cardImage {
+  object-fit: fill;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Organic Glow strictly behind frame matching artwork shape - NO RECTANGLE! */
+.frameGlow {
+  position: absolute;
+  inset: -14px;
+  filter: brightness(0) invert(1) blur(18px);
+  opacity: 0.52;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.glowImg {
+  object-fit: fill;
+}
+
+/* Detail Card Internal Styling */
+.cardPhotoTop {
+  position: absolute;
+  left: 20%;
+  top: 15%;
+  width: 60%;
+  height: 24.5%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #2a2230;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+.cardPhotoTop img,
+.cardPhotoBottom img {
+  object-fit: cover;
+}
+
+.cardFacts {
+  position: absolute;
+  left: 17%;
+  top: 45%;
+  width: 66%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.factRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.factLabel {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c9a15e;
+  font-weight: 600;
+  margin: 0;
+}
+
+.factValue {
+  font-size: 13.5px;
+  color: #1d1512;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.cardAboutBox {
+  position: absolute;
+  left: 17%;
+  top: 16%;
+  width: 66%;
+  height: 48%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+}
+
+.cardDescription {
+  margin: 0;
+  color: #1d1512;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.cardPhotoBottom {
+  position: absolute;
+  left: 20%;
+  top: 67%;
+  width: 60%;
+  height: 19%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #2a2230;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* Side Navigation Chevrons */
+.chevron {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 0;
+  color: rgba(243, 232, 208, 0.7);
+  font-size: 32px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 35;
+  cursor: pointer;
+  transition: all 200ms ease;
+  padding-bottom: 4px;
+}
+
+.chevron:hover {
+  color: #e3c07f;
+  text-shadow: 0 0 16px rgba(227, 192, 127, 0.9);
+  transform: translateY(-50%) scale(1.15);
+}
+
+.chevron:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.chevronLeft {
+  left: 2px;
+}
+
+.chevronRight {
+  right: 2px;
+}
+
+/* Footer Indicators */
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 2px;
+  z-index: 35;
+}
+
+.dotsRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(243, 232, 208, 0.35);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: all 250ms ease;
+}
+
+.dot:hover {
+  background: rgba(201, 161, 94, 0.7);
+  box-shadow: 0 0 6px rgba(201, 161, 94, 0.6);
+}
+
+.dotActive {
+  width: 20px;
+  background: #c9a15e;
+  box-shadow: 0 0 8px rgba(201, 161, 94, 0.85);
+}

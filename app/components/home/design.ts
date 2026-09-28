@@ -3,7 +3,7 @@ export const DESIGN_W = 1728;
 export const DESIGN_H = 1117;
 
 // TODO: confirm the real festival start time — the Figma mock only shows a static 51:11:33.
-export const EVENT_START = new Date("2026-11-08T00:00:00+05:30");
+export const EVENT_START = new Date("2026-10-23T19:00:00+05:30");
 
 export type Box = { x: number; y: number; w: number; h: number };
 

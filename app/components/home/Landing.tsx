@@ -48,7 +48,7 @@ function Layer({
   const { final, intro } = LAYERS[name];
   return (
     <div className={`${styles.layer} ${className}`} style={layerStyle(final, intro, atIntro, finalTransform)}>
-      <Image src={src} alt={alt} fill unoptimized preload />
+      <Image src={src} alt={alt} fill unoptimized preload suppressHydrationWarning />
     </div>
   );
 }
@@ -58,6 +58,19 @@ export default function Landing({ phase }: { phase: Phase }) {
   const atIntro = phase !== "landing";
   const nextTheme: Theme = theme === "golden" ? "ashes" : "golden";
   const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (phase === "landing") {
+      const interval = setInterval(() => {
+        setTheme((currentTheme) => {
+          const next = currentTheme === "golden" ? "ashes" : "golden";
+          savedTheme = next;
+          return next;
+        });
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [phase]);
 
   return (
     <div ref={rootRef} className={styles.landing} data-theme={theme} data-phase={phase}>
@@ -75,7 +88,15 @@ export default function Landing({ phase }: { phase: Phase }) {
           src={ASSETS.logo}
           atIntro={atIntro}
           alt="Waves '26 — Ashes to Ascension"
-          className={styles.logo}
+          className={`${styles.logo} ${styles.goldenLogo}`}
+          finalTransform={LOGO_FIT_TRANSFORM}
+        />
+        <Layer
+          name="logo"
+          src="/home/logo-red.png"
+          atIntro={atIntro}
+          alt="Waves '26 — Ashes to Ascension"
+          className={`${styles.logo} ${styles.ashesLogo}`}
           finalTransform={LOGO_FIT_TRANSFORM}
         />
       </div>
