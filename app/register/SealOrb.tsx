@@ -5,10 +5,9 @@ import DoorLink from "../_doors/DoorLink";
 import s from "./landing.module.css";
 
 /**
- * The REGISTER seal. The orb is painted into the plate, so `.orbArt` redraws the
- * same patch of the plate on top of it; that copy can then tilt toward the
- * pointer (up to 8deg, as in the Bhaaratbhushan/Waves_2026 medallion), swell,
- * and catch a sheen, with a gold/ember aura behind it.
+ * The REGISTER seal: the coin art with its label on top. It tilts toward the
+ * pointer (up to 8deg, as in the Bhaaratbhushan/Waves_2026 medallion), swells,
+ * and catches a sheen, with a gold/ember aura behind it.
  */
 export default function SealOrb({ style }: { style: CSSProperties }) {
   const tilt = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -34,10 +33,10 @@ export default function SealOrb({ style }: { style: CSSProperties }) {
       onMouseLeave={reset}
     >
       <span className={s.orbAura} aria-hidden />
-      <span className={s.orbArt} aria-hidden>
-        <span className={s.orbSheen} />
+      <span className={s.orbArt}>
+        <span className={s.orbSheen} aria-hidden />
+        <span className={s.orbLabel}>Register</span>
       </span>
-      <span className={s.srOnly}>Register</span>
     </DoorLink>
   );
 }

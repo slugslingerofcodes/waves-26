@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useId } from "react";
 import DoorLink from "../_doors/DoorLink";
-import { PLATES } from "./plates";
+import Wordmark from "./Wordmark";
 import s from "./registration.module.css";
 
 export type Mode = "individual" | "team";
@@ -20,6 +20,12 @@ const OTHER: Record<Mode, { href: string; label: string; aria: string }> = {
     label: "Individual",
     aria: "Switch to individual registration",
   },
+};
+
+/** The ornate form frame for each mode, as exported from Figma. */
+const FRAME: Record<Mode, { src: string; width: number; height: number }> = {
+  individual: { src: "/waves/frame-ascension.webp", width: 638, height: 391 },
+  team: { src: "/waves/frame-genesis.webp", width: 669, height: 373 },
 };
 
 /**
@@ -72,7 +78,7 @@ const INDIVIDUAL_FIELDS: Field[] = [
     name: "events",
     label: "Select Events :",
     placeholder: "Events",
-    options: ["Moot Court", "Contention", "Queries"],
+    options: ["Moot Court", "Queries"],
   },
 ];
 
@@ -147,6 +153,7 @@ export default function RegistrationStage({ mode }: { mode: Mode }) {
   const isTeam = mode === "team";
   const fields = isTeam ? TEAM_FIELDS : INDIVIDUAL_FIELDS;
   const other = OTHER[mode];
+  const frame = FRAME[mode];
 
   return (
     <main className={s.wrap}>
@@ -157,14 +164,19 @@ export default function RegistrationStage({ mode }: { mode: Mode }) {
           event.preventDefault();
         }}
       >
+        <Wordmark className={s.logo} />
+
+        <DoorLink className={s.back} href="/register">
+          Back
+        </DoorLink>
+
         <Image
-          className={`${s.plate} ${s.plateOn}`}
-          src={PLATES[mode].src}
+          className={s.frame}
+          src={frame.src}
           alt=""
-          fill
-          sizes="(max-width: 1440px) 100vw, 1440px"
-          placeholder="blur"
-          blurDataURL={PLATES[mode].blurDataURL}
+          width={frame.width}
+          height={frame.height}
+          unoptimized
           preload
         />
 
@@ -192,10 +204,6 @@ export default function RegistrationStage({ mode }: { mode: Mode }) {
         <button className={s.submit} type="submit">
           Register
         </button>
-
-        <DoorLink className={s.back} href="/register">
-          Back
-        </DoorLink>
       </form>
     </main>
   );

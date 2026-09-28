@@ -12,6 +12,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/" || pathname === "/home";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Registration pages only: the desktop links fold away behind a toggle.
+  const [linksCollapsed, setLinksCollapsed] = useState(false);
 
   // Map routes to navbar colour themes
   const navTheme = (() => {
@@ -81,6 +83,9 @@ export default function Navbar() {
     return pathname === item.href || pathname.startsWith(item.href + "/");
   };
 
+  // On the registration pages the link to the page you are already on is dropped.
+  const shownItems = isRegister ? navItems.filter((item) => !isActive(item)) : navItems;
+
   return (
     <>
       {/* Full screen beige card overlay for mobile menu — slides down from top */}
@@ -109,7 +114,7 @@ export default function Navbar() {
         {/* Navigation Links - Top Right (desktop) */}
         {!isHome && (
           <div className="navbar-desktop-menu hidden md:flex flex-row items-center gap-[clamp(16px,2vw,32px)] z-50">
-            {navItems.map((item) => {
+            {!(isRegister && linksCollapsed) && shownItems.map((item) => {
               const className = `navbar-link inline-block text-[clamp(16px,2.7vw,35px)] leading-normal transition-all duration-200 ease-out${
                 item.href ? " hover:scale-125 hover:drop-shadow-lg focus-visible:scale-110 focus-visible:outline-none" : ""
               }${isActive(item) ? " navbar-link--active" : ""}`;
@@ -131,6 +136,20 @@ export default function Navbar() {
                 </span>
               );
             })}
+            {isRegister && (
+              <button
+                type="button"
+                className="navbar-link navbar-collapse"
+                onClick={() => setLinksCollapsed((prev) => !prev)}
+                aria-expanded={!linksCollapsed}
+                aria-label={linksCollapsed ? "Show navigation links" : "Hide navigation links"}
+                title={linksCollapsed ? "Show navigation" : "Hide navigation"}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden className={linksCollapsed ? "" : "navbar-collapse__icon--open"}>
+                  <path d="M15 5l-7 7 7 7" />
+                </svg>
+              </button>
+            )}
           </div>
         )}
 
@@ -150,7 +169,7 @@ export default function Navbar() {
         <div
           className={`navbar-mobile-menu md:hidden pointer-events-auto z-50${mobileMenuOpen ? " navbar-mobile-menu--open" : ""}`}
         >
-          {navItems.map((item) => {
+          {shownItems.map((item) => {
             const className = `navbar-mobile-menu__link${isActive(item) ? " navbar-mobile-menu__link--active" : ""}`;
             const style = { fontFamily: "'Yasharth', sans-serif" };
             return item.href ? (
