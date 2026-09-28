@@ -52,7 +52,7 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--theme-duration, 0.3s) ease;
 }
 
 .landing[data-theme="ashes"] .ashesLayers {
@@ -61,6 +61,23 @@
 
 .logo {
   filter: drop-shadow(0 4px 20px rgb(255 255 255 / 0.12));
+}
+
+.goldenLogo {
+  transition: transform 2s var(--ease), opacity var(--theme-duration, 0.3s) ease;
+}
+
+.landing[data-theme="ashes"] .goldenLogo {
+  opacity: 0;
+}
+
+.ashesLogo {
+  opacity: 0;
+  transition: transform 2s var(--ease), opacity var(--theme-duration, 0.3s) ease;
+}
+
+.landing[data-theme="ashes"] .ashesLogo {
+  opacity: 1;
 }
 
 .ui {
@@ -79,8 +96,8 @@
 }
 
 .landing[data-theme="ashes"] .ui {
-  --text: #e20000;
-  --count: #e20000;
+  --text: #f9e6c1;
+  --count: #f9e6c1;
 }
 
 /* Nav */
@@ -99,7 +116,7 @@
   line-height: 1.15;
   color: var(--text);
   text-decoration: none;
-  transition: transform 0.3s ease, text-shadow 0.3s ease, color 0.3s ease;
+  transition: transform 0.3s ease, text-shadow 0.3s ease, color var(--theme-duration, 0.3s) ease;
 }
 
 .navLink:hover,
@@ -211,7 +228,7 @@
   transform: scale(var(--ui-s));
   transform-origin: bottom left;
   color: var(--count);
-  transition: color 0.3s ease;
+  transition: color var(--theme-duration, 0.3s) ease;
 }
 
 .unit {
@@ -293,7 +310,7 @@
   -webkit-text-stroke: 1px #fff;
   text-shadow: 5px 5px 10px #000;
   animation: glow 2.5s ease-in-out infinite;
-  transition: color 0.3s ease;
+  transition: color var(--theme-duration, 0.3s) ease;
 }
 
 .register:hover,
@@ -303,7 +320,7 @@
 }
 
 .landing[data-theme="ashes"] .register {
-  color: #dc0000;
+  color: #f9e6c1;
   -webkit-text-stroke: 2px #000;
   paint-order: stroke fill;
 }
@@ -311,7 +328,7 @@
 .landing[data-theme="ashes"] .register:hover,
 .landing[data-theme="ashes"] .register:focus-visible {
   color: #000;
-  -webkit-text-stroke-color: #dc0000;
+  -webkit-text-stroke-color: #f9e6c1;
 }
 
 /* ---------- Animations ---------- */
