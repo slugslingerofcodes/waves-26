@@ -29,15 +29,17 @@ type Nav = {
 };
 
 const NAV: Nav[] = [
-  { label: "Rulebook", side: "genesis", at: [230, 221] },
+  { label: "Rulebook", side: "genesis", at: [230, 221], href: "/register/rulebook" },
   { label: "Pay Now", side: "genesis", at: [167, 452], href: "https://www.onlinesbi.sbi/sbicollect/icollecthome.htm" },
   { label: "Queries", side: "ascension", at: [902, 221] },
-  { label: "Moot Court", side: "ascension", at: [961, 452] },
-  { label: "How to Pay", side: "genesis", at: [562, 690], howToPay: true },
+  { label: "Mr & Mrs Waves", side: "ascension", at: [961, 452] },
+  { label: "Fashion Parade", side: "ascension", at: [940, 683] },
+  // Mirrors Fashion Parade across the centre line.
+  { label: "How to Pay", side: "genesis", at: [188, 683], howToPay: true },
 ];
 
-/** The coin's disc: 298px across, centred at (720, 494). */
-const ORB: [number, number, number] = [571, 345, 298];
+/** The coin's disc: 298px across, centred at (720, 540) -- level with the middle row. */
+const ORB: [number, number, number] = [571, 391, 298];
 
 const px = (n: number) => `calc(${n} * var(--px))`;
 

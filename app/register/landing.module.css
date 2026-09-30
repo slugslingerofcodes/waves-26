@@ -45,16 +45,17 @@
   display: grid;
   place-items: center;
   height: calc(176 * var(--px));
-  padding: 0;
+  /* Keeps labels inside the card's border; the longer ones wrap to two lines. */
+  padding: 0 calc(34 * var(--px));
   appearance: none;
   border: 0;
   color: #fff;
   font-family: inherit;
   font-size: calc(48 * var(--px));
   line-height: 1;
+  text-align: center;
   text-transform: uppercase;
   text-decoration: none;
-  white-space: nowrap;
   background: center / 100% 100% no-repeat;
   cursor: pointer;
   transition:

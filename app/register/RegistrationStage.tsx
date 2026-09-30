@@ -78,7 +78,7 @@ const INDIVIDUAL_FIELDS: Field[] = [
     name: "events",
     label: "Select Events :",
     placeholder: "Events",
-    options: ["Moot Court", "Queries"],
+    options: ["Fashion Parade", "Mr & Mrs Waves", "Queries"],
   },
 ];
 
