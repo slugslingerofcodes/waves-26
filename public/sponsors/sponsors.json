@@ -1,54 +1,129 @@
 {
-  "_comment": "Edit this file to change the sponsor trail. Logos live in public/sponsors/logos/; 'href' may be null.",
+  "_comment": "Past sponsors, carried over from Waves 2023 (Devsoc-BPGC/waves-2023) as placeholders until the 2026 sponsors are confirmed. Edit this file to change the trail; logos live in public/sponsors/logos/.",
   "sponsors": [
     {
-      "name": "Aurora Labs",
-      "logo": "/sponsors/logos/aurora.svg",
+      "name": "Skin Story",
+      "logo": "/sponsors/logos/skinstory.png",
       "href": null
     },
     {
-      "name": "Beacon Foods",
-      "logo": "/sponsors/logos/beacon.svg",
+      "name": "Vastrado",
+      "logo": "/sponsors/logos/vastradi.png",
       "href": null
     },
     {
-      "name": "Cobalt Motors",
-      "logo": "/sponsors/logos/cobalt.svg",
+      "name": "PETA India",
+      "logo": "/sponsors/logos/petaindia.svg",
       "href": null
     },
     {
-      "name": "Drift Audio",
-      "logo": "/sponsors/logos/drift.svg",
+      "name": "EaseMyTrip",
+      "logo": "/sponsors/logos/easemytrip.png",
       "href": null
     },
     {
-      "name": "Ember Apparel",
-      "logo": "/sponsors/logos/ember.svg",
+      "name": "KnotsByAMP",
+      "logo": "/sponsors/logos/knotsbyamp.png",
       "href": null
     },
     {
-      "name": "Fathom Media",
-      "logo": "/sponsors/logos/fathom.svg",
+      "name": "Samaro",
+      "logo": "/sponsors/logos/samaro.png",
       "href": null
     },
     {
-      "name": "Gilded Press",
-      "logo": "/sponsors/logos/gilded.svg",
+      "name": "Too Yumm",
+      "logo": "/sponsors/logos/tooyumm.png",
       "href": null
     },
     {
-      "name": "Halcyon Radio",
-      "logo": "/sponsors/logos/halcyon.svg",
+      "name": "Kiaya",
+      "logo": "/sponsors/logos/kiaya.png",
       "href": null
     },
     {
-      "name": "Ivory Studios",
-      "logo": "/sponsors/logos/ivory.svg",
+      "name": "SBI",
+      "logo": "/sponsors/logos/sbi.png",
       "href": null
     },
     {
-      "name": "Junction FM",
-      "logo": "/sponsors/logos/junction.svg",
+      "name": "Mogu Mogu",
+      "logo": "/sponsors/logos/mogu.png",
+      "href": null
+    },
+    {
+      "name": "Vicco",
+      "logo": "/sponsors/logos/vicco.png",
+      "href": null
+    },
+    {
+      "name": "Oatly",
+      "logo": "/sponsors/logos/oatly.png",
+      "href": null
+    },
+    {
+      "name": "Gatsby",
+      "logo": "/sponsors/logos/gatsby.png",
+      "href": null
+    },
+    {
+      "name": "ICICI",
+      "logo": "/sponsors/logos/icici.png",
+      "href": null
+    },
+    {
+      "name": "Sumo Biscuit",
+      "logo": "/sponsors/logos/sumo.png",
+      "href": null
+    },
+    {
+      "name": "Renaissance",
+      "logo": "/sponsors/logos/renaissance.png",
+      "href": null
+    },
+    {
+      "name": "Maysixty",
+      "logo": "/sponsors/logos/maysixty.png",
+      "href": null
+    },
+    {
+      "name": "Nestle",
+      "logo": "/sponsors/logos/nestle.png",
+      "href": null
+    },
+    {
+      "name": "Clovia",
+      "logo": "/sponsors/logos/clovia.png",
+      "href": null
+    },
+    {
+      "name": "Cornitos",
+      "logo": "/sponsors/logos/cornitos.png",
+      "href": null
+    },
+    {
+      "name": "Fablabs",
+      "logo": "/sponsors/logos/fablabs.png",
+      "href": null
+    },
+    {
+      "name": "Artify",
+      "logo": "/sponsors/logos/artify.png",
+      "href": null
+    },
+    {
+      "name": "REAL",
+      "logo": "/sponsors/logos/real.png",
+      "href": null
+    },
+    {
+      "name": "Princess",
+      "logo": "/sponsors/logos/princess.png",
+      "href": null
+    },
+    {
+      "name": "UTI Mutual Fund",
+      "logo": "/sponsors/logos/uti-logo.png",
       "href": null
     }
   ]
