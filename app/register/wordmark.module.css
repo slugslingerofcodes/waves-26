@@ -1,0 +1,34 @@
+/* The logo + tagline block. Position, width and font-size come from the page. */
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  color: var(--tagline, #d0beab);
+  line-height: 1;
+  text-decoration: none;
+  transition: filter 200ms ease;
+}
+
+.art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 621 / 191;
+  object-fit: fill;
+  filter: drop-shadow(var(--logo-shadow, 0 0 0 transparent));
+  user-select: none;
+}
+
+.tagline {
+  font-size: 1em;
+  white-space: nowrap;
+}
+
+.wordmark:hover {
+  filter: brightness(1.12);
+}
+
+.wordmark:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}

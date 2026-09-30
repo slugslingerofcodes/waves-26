@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Instrument_Serif } from "next/font/google";
 import s from "./shell.module.css";
 
-/**
- * The registration frames render in a high-contrast transitional serif. Playfair
- * is the closest widely available match; swap the import here if the source file
- * names a specific face.
- */
-const playfair = Playfair_Display({
+/** Instrument Serif is the face every text layer in the Figma frames uses. */
+const instrumentSerif = Instrument_Serif({
   variable: "--font-display",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -22,7 +19,7 @@ import Navbar from "@/components/Navbar";
 
 export default function RegisterLayout({ children }: LayoutProps<"/register">) {
   return (
-    <div className={`${playfair.variable} ${s.shell}`}>
+    <div className={`${instrumentSerif.variable} ${s.shell}`}>
       <Navbar />
       {children}
     </div>

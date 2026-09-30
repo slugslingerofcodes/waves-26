@@ -119,6 +119,47 @@ nav[data-theme="dark"] .navbar-link {
   color: #DAA950;
 }
 
+/* ── Navbar: desktop collapse toggle (registration pages) ───────────── */
+
+.navbar-collapse {
+  display: grid;
+  place-items: center;
+  width: clamp(28px, 2.6vw, 38px);
+  height: clamp(28px, 2.6vw, 38px);
+  padding: 0;
+  background: rgba(12, 10, 8, 0.35);
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.navbar-collapse:hover {
+  background: rgba(12, 10, 8, 0.6);
+  transform: scale(1.08);
+}
+
+.navbar-collapse:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.navbar-collapse svg {
+  width: 60%;
+  height: 60%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+/* Chevron points right ("fold away") while the links are showing. */
+.navbar-collapse svg.navbar-collapse__icon--open {
+  transform: rotate(180deg);
+}
+
 /* ── Navbar: hamburger + mobile menu ────────────── */
 
 .navbar-hamburger {
